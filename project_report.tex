@@ -105,18 +105,8 @@ The preprocessing workflow maps raw unstructured data to high-performance column
 % --- FIGURE 1: SYSTEM WORKFLOW ---
 \begin{figure}[H]
 \centering
-\fbox{
-  \begin{minipage}{0.9\textwidth}
-    \centering
-    \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: Hive Data Pipeline Workflow Diagram]}
-    \vspace{0.8cm}
-    
-    \small \textit{Instructions: Draw and insert a flowchart diagram showing the flow: Excel Sheet $\rightarrow$ Python pandas cleaning $\rightarrow$ HDFS Storage $\rightarrow$ Hive Staging Table $\rightarrow$ Hive SQL Queries $\rightarrow$ Compressed ORC Output Table.}
-    \vspace{1.5cm}
-  \end{minipage}
-}
-\caption{Hive Preprocessing Architecture: From Source Spreadsheet to Clean Warehouse Storage. \textbf{[What to Paste Here: A block diagram detailing the stages of the pipeline and the data formats (Excel Binary $\rightarrow$ CSV $\rightarrow$ Text Table $\rightarrow$ Snappy ORC Table).]}}
+\includegraphics[width=0.95\textwidth]{images/pipelineworkflow.png}
+\caption{Hive Preprocessing Architecture: From Source Spreadsheet to Clean Warehouse Storage.}
 \label{fig:workflow}
 \end{figure}
 
@@ -136,18 +126,8 @@ To allow our query engine to authenticate without proxyuser permissions, we disa
 % --- FIGURE 2: METASTORE INITIALIZATION ---
 \begin{figure}[H]
 \centering
-\fbox{
-  \begin{minipage}{0.9\textwidth}
-    \centering
-    \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: Metastore Schema Initialization Output]}
-    \vspace{0.8cm}
-    
-    \small \textit{Instructions: Capture a screenshot of your terminal showing the execution of \texttt{schematool -dbType derby -initSchema}. The output should show the derby schema files executing and ending with a success confirmation.}
-    \vspace{1.5cm}
-  \end{minipage}
-}
-\caption{Metastore Schema Initialization logs. \textbf{[What to Paste Here: A terminal screenshot showing the schematool command output confirming derby initialization to version 4.0.0.]}}
+\includegraphics[width=0.95\textwidth]{images/metastoreinit.png}
+\caption{Metastore Schema Initialization logs demonstrating successful Derby DB metadata creation.}
 \label{fig:metastoreinit}
 \end{figure}
 
@@ -172,18 +152,8 @@ TBLPROPERTIES ("skip.header.line.count"="1");
 % --- FIGURE 3: HDFS UPLOAD AND LOAD ---
 \begin{figure}[H]
 \centering
-\fbox{
-  \begin{minipage}{0.9\textwidth}
-    \centering
-    \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: HDFS File Upload and Directory Listing]}
-    \vspace{0.8cm}
-    
-    \small \textit{Instructions: Run the upload script \texttt{scripts/upload\_to\_hdfs.sh} and capture a screenshot of your terminal showing HDFS directory listing \texttt{hdfs dfs -ls /data/student\_scores.csv} confirming the dataset is correctly stored in Hadoop.}
-    \vspace{1.5cm}
-  \end{minipage}
-}
-\caption{Verification of CSV Dataset on Hadoop HDFS. \textbf{[What to Paste Here: A terminal screenshot of the command \texttt{hdfs dfs -ls -R /data} showing that the file is in HDFS supergroup.]}}
+\includegraphics[width=0.95\textwidth]{images/hdfsupload.png}
+\caption{Verification of CSV Dataset on Hadoop HDFS showing the uploaded student scores CSV file.}
 \label{fig:hdfsupload}
 \end{figure}
 
@@ -231,18 +201,8 @@ SELECT * FROM raw_data WHERE CAST(marks AS INT) < 0 OR CAST(marks AS INT) > 100;
 % --- FIGURE 4: OUTLIER DETECTION ---
 \begin{figure}[H]
 \centering
-\fbox{
-  \begin{minipage}{0.9\textwidth}
-    \centering
-    \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: Invalid Data/Outlier Query Output]}
-    \vspace{0.8cm}
-    
-    \small \textit{Instructions: Capture a screenshot of the Beeline terminal showing the outlier search query output. It should return David's record (ID 105) showing marks = 120, demonstrating successful noise detection.}
-    \vspace{1.5cm}
-  \end{minipage}
-}
-\caption{Noisy Data/Outliers detected in the staging dataset. \textbf{[What to Paste Here: A screenshot of the query results showing David (ID 105) with 120 marks being selected by the boundary-check query.]}}
+\includegraphics[width=0.95\textwidth]{images/outliers.png}
+\caption{Noisy Data/Outliers detected in the staging dataset, filtering out David's out-of-bound score.}
 \label{fig:outliers}
 \end{figure}
 
@@ -283,18 +243,8 @@ The final cleaned dataset shows perfect de-duplication, format standardizations,
 % --- FIGURE 5: FINAL CLEANED DATASET ---
 \begin{figure}[H]
 \centering
-\fbox{
-  \begin{minipage}{0.95\textwidth}
-    \centering
-    \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: Beeline Cleaned Dataset Query Output]}
-    \vspace{0.8cm}
-    
-    \small \textit{Instructions: Run the query \texttt{SELECT * FROM cleaned\_student\_scores;} inside Beeline. Capture a screenshot of the output showing 7 cleaned student rows, with upper case names, lower case courses, Mary's marks as 0, and no duplicates.}
-    \vspace{1.5cm}
-  \end{minipage}
-}
-\caption{Final Processed Dataset stored in Hive ORC Table. \textbf{[What to Paste Here: A terminal screenshot of the final query results showing the 7 cleaned student records.]}}
+\includegraphics[width=0.95\textwidth]{images/finaldataset.png}
+\caption{Final Processed Dataset stored in Hive ORC Table containing 7 cleaned records.}
 \label{fig:finaldataset}
 \end{figure}
 
