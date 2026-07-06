@@ -1,87 +1,89 @@
 \documentclass[11pt,a4paper]{article}
 
-% Required Packages
+% Encoding
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[margin=1in]{geometry}
+
+% Page Layout
+\usepackage[a4paper,margin=1in]{geometry}
+
+% Graphics
 \usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{xcolor}
-\usepackage{hyperref}
-\usepackage{listings}
-\usepackage{fancyhdr}
-\usepackage{titlesec}
-\usepackage{amsmath}
 \usepackage{float}
+
+% Tables
+\usepackage{booktabs}
+
+% Mathematics
+\usepackage{amsmath}
+
+% Colors
+\usepackage[dvipsnames]{xcolor}
+
+% Hyperlinks
+\usepackage[hidelinks]{hyperref}
+
+% Code Listings
+\usepackage{listings}
+
+% Headers
+\usepackage{fancyhdr}
+
+% Section Formatting
+\usepackage{titlesec}
 
 % Adjust headheight to prevent fancyhdr warnings
 \setlength{\headheight}{14pt}
 
-% Color Definitions (Slate & Cool Theme)
-\definecolor{primary}{HTML}{0F172A}    % Slate 900
-\definecolor{secondary}{HTML}{1E293B}  % Slate 800
-\definecolor{accent}{HTML}{2563EB}     % Blue 600
-\definecolor{lightbg}{HTML}{F8FAFC}    % Slate 50
-\definecolor{border}{HTML}{E2E8F0}     % Slate 200
-\definecolor{statusgreen}{HTML}{16A34A} % Green 600
+% Colors
+\definecolor{primary}{RGB}{15,23,42}
+\definecolor{secondary}{RGB}{30,41,59}
+\definecolor{accent}{RGB}{37,99,235}
+\definecolor{lightbg}{RGB}{248,250,252}
 
-% Hyperlink Configuration
+% Hyperref
 \hypersetup{
     colorlinks=true,
-    linkcolor=accent,
-    filecolor=accent,      
-    urlcolor=accent,
-    citecolor=accent,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
 }
 
-% Page Header/Footer Style
+% Header/Footer
 \pagestyle{fancy}
 \fancyhf{}
-\rhead{\textcolor{secondary}{\textit{Hive Data Preprocessing}}}
-\lhead{\textcolor{secondary}{\textit{Big Data Practical}}}
-\rfoot{\thepage}
-\renewcommand{\headrulewidth}{0.5pt}
+\lhead{Big Data Practical}
+\rhead{Hive Data Preprocessing}
+\cfoot{\thepage}
 
-% Section Titles Formatting
+% Section Style
 \titleformat{\section}
-  {\color{primary}\normalfont\Large\bfseries}
-  {\thesection}{1em}{}
+{\Large\bfseries\color{primary}}
+{\thesection}{1em}{}
+
 \titleformat{\subsection}
-  {\color{secondary}\normalfont\large\bfseries}
-  {\thesubsection}{1em}{}
+{\large\bfseries\color{secondary}}
+{\thesubsection}{1em}{}
 
-% Listings configuration
+% Listings
 \lstset{
-    backgroundcolor=\color{lightbg},
     basicstyle=\ttfamily\small,
-    breakatwhitespace=false,
+    backgroundcolor=\color{lightbg},
     breaklines=true,
-    captionpos=b,
-    commentstyle=\color{gray},
-    keepspaces=true,
-    keywordstyle=\color{accent},
-    showspaces=false,
     showstringspaces=false,
-    showtabs=false,
-    tabsize=4
+    frame=single
 }
 
-% Title details
-\title{
-    \vspace{2cm}
-    \Huge \textbf{Data Preprocessing Using Apache Hive \\ Practical Lab Report} \\
-    \vspace{0.5cm}
-    \large \textit{Hadoop + Hive Integration and Preprocessing Pipeline}
-    \vspace{1.5cm}
-}
-\author{\textbf{Big Data Analytics Group Assignment} \\ Course Practical Presentation}
+\title{\Huge Data Preprocessing Using Apache Hive\\[0.4cm]
+\Large Practical Lab Report}
+
+\author{Big Data Analytics Group}
+
 \date{\today}
 
 \begin{document}
 
 \maketitle
-\thispagestyle{empty}
-\newpage
-
 \tableofcontents
 \newpage
 
@@ -107,9 +109,10 @@ The preprocessing workflow maps raw unstructured data to high-performance column
   \begin{minipage}{0.9\textwidth}
     \centering
     \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: Hive Data Pipeline Workflow Diagram]} \\
+    \textbf{\large [PLACEHOLDER: Hive Data Pipeline Workflow Diagram]}
     \vspace{0.8cm}
-    \small \textit{Instructions: Draw and insert a flowchart diagram showing the flow: Excel Sheet $\rightarrow$ Python pandas cleaning $\rightarrow$ HDFS Storage $\rightarrow$ Hive Staging Table $\rightarrow$ Hive SQL Queries $\rightarrow$ Compressed ORC Output Table.} \\
+    
+    \small \textit{Instructions: Draw and insert a flowchart diagram showing the flow: Excel Sheet $\rightarrow$ Python pandas cleaning $\rightarrow$ HDFS Storage $\rightarrow$ Hive Staging Table $\rightarrow$ Hive SQL Queries $\rightarrow$ Compressed ORC Output Table.}
     \vspace{1.5cm}
   \end{minipage}
 }
@@ -137,9 +140,10 @@ To allow our query engine to authenticate without proxyuser permissions, we disa
   \begin{minipage}{0.9\textwidth}
     \centering
     \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: Metastore Schema Initialization Output]} \\
+    \textbf{\large [PLACEHOLDER: Metastore Schema Initialization Output]}
     \vspace{0.8cm}
-    \small \textit{Instructions: Capture a screenshot of your terminal showing the execution of \texttt{schematool -dbType derby -initSchema}. The output should show the derby schema files executing and ending with a success confirmation.} \\
+    
+    \small \textit{Instructions: Capture a screenshot of your terminal showing the execution of \texttt{schematool -dbType derby -initSchema}. The output should show the derby schema files executing and ending with a success confirmation.}
     \vspace{1.5cm}
   \end{minipage}
 }
@@ -172,13 +176,14 @@ TBLPROPERTIES ("skip.header.line.count"="1");
   \begin{minipage}{0.9\textwidth}
     \centering
     \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: HDFS File Upload and Directory Listing]} \\
+    \textbf{\large [PLACEHOLDER: HDFS File Upload and Directory Listing]}
     \vspace{0.8cm}
-    \small \textit{Instructions: Run the upload script \texttt{scripts/upload\_to\_hdfs.sh} and capture a screenshot of your terminal showing HDFS directory listing \texttt{hdfs dfs -ls /data/student\_scores.csv} confirming the dataset is correctly stored in Hadoop.} \\
+    
+    \small \textit{Instructions: Run the upload script \texttt{scripts/upload\_to\_hdfs.sh} and capture a screenshot of your terminal showing HDFS directory listing \texttt{hdfs dfs -ls /data/student\_scores.csv} confirming the dataset is correctly stored in Hadoop.}
     \vspace{1.5cm}
   \end{minipage}
 }
-\caption{Verification of CSV Dataset on Hadoop HDFS. \textbf{[What to Paste Here: A terminal screenshot of the command ``hdfs dfs -ls -R /data'' showing that the file is in HDFS supergroup.]}}
+\caption{Verification of CSV Dataset on Hadoop HDFS. \textbf{[What to Paste Here: A terminal screenshot of the command \texttt{hdfs dfs -ls -R /data} showing that the file is in HDFS supergroup.]}}
 \label{fig:hdfsupload}
 \end{figure}
 
@@ -230,9 +235,10 @@ SELECT * FROM raw_data WHERE CAST(marks AS INT) < 0 OR CAST(marks AS INT) > 100;
   \begin{minipage}{0.9\textwidth}
     \centering
     \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: Invalid Data/Outlier Query Output]} \\
+    \textbf{\large [PLACEHOLDER: Invalid Data/Outlier Query Output]}
     \vspace{0.8cm}
-    \small \textit{Instructions: Capture a screenshot of the Beeline terminal showing the outlier search query output. It should return David's record (ID 105) showing marks = 120, demonstrating successful noise detection.} \\
+    
+    \small \textit{Instructions: Capture a screenshot of the Beeline terminal showing the outlier search query output. It should return David's record (ID 105) showing marks = 120, demonstrating successful noise detection.}
     \vspace{1.5cm}
   \end{minipage}
 }
@@ -281,9 +287,10 @@ The final cleaned dataset shows perfect de-duplication, format standardizations,
   \begin{minipage}{0.95\textwidth}
     \centering
     \vspace{1.5cm}
-    \textbf{\large [PLACEHOLDER: Beeline Cleaned Dataset Query Output]} \\
+    \textbf{\large [PLACEHOLDER: Beeline Cleaned Dataset Query Output]}
     \vspace{0.8cm}
-    \small \textit{Instructions: Run the query \texttt{SELECT * FROM cleaned\_student\_scores;} inside Beeline. Capture a screenshot of the output showing 7 cleaned student rows, with upper case names, lower case courses, Mary's marks as 0, and no duplicates.} \\
+    
+    \small \textit{Instructions: Run the query \texttt{SELECT * FROM cleaned\_student\_scores;} inside Beeline. Capture a screenshot of the output showing 7 cleaned student rows, with upper case names, lower case courses, Mary's marks as 0, and no duplicates.}
     \vspace{1.5cm}
   \end{minipage}
 }
