@@ -1,254 +1,746 @@
 \documentclass[11pt,a4paper]{article}
 
-% Encoding
+% ── Encoding ──────────────────────────────────────────────────────────────────
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-% Page Layout
-\usepackage[a4paper,margin=1in]{geometry}
+% ── Page Layout ───────────────────────────────────────────────────────────────
+\usepackage[a4paper, top=1in, bottom=1in, left=1in, right=1in]{geometry}
 
-% Graphics
+% ── Graphics ──────────────────────────────────────────────────────────────────
 \usepackage{graphicx}
 \usepackage{float}
 
-% Tables
+% ── Tables ────────────────────────────────────────────────────────────────────
 \usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
 
-% Mathematics
+% ── Mathematics ───────────────────────────────────────────────────────────────
 \usepackage{amsmath}
+\usepackage{amssymb}
 
-% Colors
+% ── Colors ────────────────────────────────────────────────────────────────────
 \usepackage[dvipsnames]{xcolor}
-
-% Hyperlinks
-\usepackage[hidelinks]{hyperref}
-
-% Code Listings
-\usepackage{listings}
-
-% Headers
-\usepackage{fancyhdr}
-
-% Section Formatting
-\usepackage{titlesec}
-
-% Adjust headheight to prevent fancyhdr warnings
-\setlength{\headheight}{14pt}
-
-% Colors
 \definecolor{primary}{RGB}{15,23,42}
 \definecolor{secondary}{RGB}{30,41,59}
 \definecolor{accent}{RGB}{37,99,235}
 \definecolor{lightbg}{RGB}{248,250,252}
+\definecolor{codebg}{RGB}{240,244,248}
+\definecolor{warnbg}{RGB}{255,243,205}
+\definecolor{successbg}{RGB}{212,237,218}
 
-% Hyperref
+% ── Hyperlinks ────────────────────────────────────────────────────────────────
+\usepackage[hidelinks]{hyperref}
 \hypersetup{
     colorlinks=true,
-    linkcolor=blue,
-    urlcolor=blue,
-    citecolor=blue
+    linkcolor=accent,
+    urlcolor=accent,
+    citecolor=accent
 }
 
-% Header/Footer
-\pagestyle{fancy}
-\fancyhf{}
-\lhead{Big Data Practical}
-\rhead{Hive Data Preprocessing}
-\cfoot{\thepage}
-
-% Section Style
-\titleformat{\section}
-{\Large\bfseries\color{primary}}
-{\thesection}{1em}{}
-
-\titleformat{\subsection}
-{\large\bfseries\color{secondary}}
-{\thesubsection}{1em}{}
-
-% Listings
-\lstset{
-    basicstyle=\ttfamily\small,
-    backgroundcolor=\color{lightbg},
+% ── Code Listings ─────────────────────────────────────────────────────────────
+\usepackage{listings}
+\lstdefinestyle{HiveStyle}{
+    language=SQL,
+    basicstyle=\ttfamily\footnotesize,
+    backgroundcolor=\color{codebg},
+    commentstyle=\color{OliveGreen}\itshape,
+    keywordstyle=\color{accent}\bfseries,
+    stringstyle=\color{BrickRed},
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    stepnumber=1,
+    numbersep=8pt,
     breaklines=true,
     showstringspaces=false,
-    frame=single
+    frame=single,
+    framesep=4pt,
+    xleftmargin=12pt,
+    rulecolor=\color{gray!40},
+    tabsize=4,
+    captionpos=b,
+    morekeywords={
+        CREATE, TABLE, DROP, IF, EXISTS, STORED, AS, ORC, TEXTFILE,
+        TBLPROPERTIES, LOAD, DATA, INPATH, INTO, ROW, FORMAT, DELIMITED,
+        FIELDS, TERMINATED, BY, SELECT, FROM, WHERE, GROUP, ORDER,
+        HAVING, DISTINCT, PARTITION, OVER, LAG, ROW_NUMBER, ROUND,
+        CAST, COALESCE, NULLIF, TRIM, LOWER, UPPER, INITCAP, SPLIT,
+        REGEXP_REPLACE, CONCAT, POWER, WITH, COUNT, MAX, AVG, MIN,
+        CASE, WHEN, THEN, ELSE, END, AND, OR, NOT, IN, NULL, INT,
+        STRING, BIGINT, DOUBLE, ASC, DESC, LIMIT, SET, SNAPPY
+    }
 }
+\lstset{style=HiveStyle}
 
-\title{\Huge Data Preprocessing Using Apache Hive\\[0.4cm]
-\Large Practical Lab Report}
+% ── Headers / Footers ─────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{secondary}Big Data Analytics – Group Assignment}
+\rhead{\small\color{secondary}Hadoop \& Hive: Employee Dataset Analysis}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
 
+% ── Section Formatting ────────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}{\Large\bfseries\color{primary}}{\thesection}{1em}{}[{\color{accent}\titlerule[0.6pt]}]
+\titleformat{\subsection}{\large\bfseries\color{secondary}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{secondary}}{\thesubsubsection}{1em}{}
+
+% ── Misc ──────────────────────────────────────────────────────────────────────
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf, labelsep=period}
+
+% ── Document Metadata ─────────────────────────────────────────────────────────
+\title{
+    \vspace{-1cm}
+    {\Huge\bfseries\color{primary} Big Data Analytics}\\[0.4cm]
+    {\Large\color{secondary} Employee Dataset Analysis Using Apache Hadoop \& Hive}\\[0.3cm]
+    {\normalsize\color{gray} Group Assignment Report}
+}
 \author{Big Data Analytics Group}
-
 \date{\today}
 
+% =============================================================================
 \begin{document}
+% =============================================================================
 
 \maketitle
+\thispagestyle{fancy}
+
+\begin{abstract}
+This report documents a full end-to-end Big Data analysis of an Employee Dataset
+using Apache Hadoop (HDFS) and Apache Hive (HQL). The dataset of 100 employee
+records is uploaded to HDFS, loaded into a Hive staging table, and processed
+through a multi-stage pipeline. The analysis covers five data preprocessing
+problems, job-title column splitting, PhD experience queries, skills-count
+ordering, call-log growth rate computation, and call-log future value prediction
+using a compound growth model.
+\end{abstract}
+
 \tableofcontents
 \newpage
 
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Introduction}
-Data preprocessing is a critical first step in big data analytics and machine learning pipelines. Messy, raw data stored in distributed systems like Apache Hadoop must be cleaned, deduplicated, and formatted to ensure analytical accuracy and model reliability.
+% ─────────────────────────────────────────────────────────────────────────────
+Big Data analytics requires robust pipelines that can store, clean, and query
+large volumes of structured data at scale. Apache Hadoop provides the distributed
+storage (HDFS) and compute (MapReduce/YARN) foundation, while Apache Hive
+translates SQL-like queries (HQL) into distributed jobs running on that cluster.
 
-This report outlines the end-to-end implementation of a Hive preprocessing pipeline executed on the student scores dataset (\texttt{student\_score.xlsx}). Using Apache Hive, we clean invalid, missing, and duplicate values, standardize text representations, and output a clean, high-performance structured dataset.
+This practical demonstrates the full workflow on an \textbf{Employee Dataset}
+(\texttt{EmployeeDataset.csv}, 100 rows, 12 columns) covering roles from AI
+Engineer to Cybersecurity Analyst across countries, education levels, and
+industries.
 
+\subsection{Dataset Schema}
+\begin{table}[H]
+\centering
+\caption{EmployeeDataset.csv -- Column Definitions}
+\begin{tabularx}{\textwidth}{@{}llX@{}}
+\toprule
+\textbf{Column} & \textbf{Type} & \textbf{Description} \\
+\midrule
+\texttt{job\_id}          & INT    & Unique employee identifier \\
+\texttt{job\_title}       & STRING & Full job title (e.g.\ \textit{AI Engineer}) \\
+\texttt{experience\_years}& INT    & Years of professional experience \\
+\texttt{education\_level} & STRING & Highest qualification (PhD, Bachelor, etc.) \\
+\texttt{skills\_count}    & INT    & Number of listed technical skills \\
+\texttt{industry}         & STRING & Sector (Healthcare, Finance, Technology…) \\
+\texttt{company\_size}    & STRING & Small / Medium / Large / Enterprise / Startup \\
+\texttt{location}         & STRING & Country of employment \\
+\texttt{remote\_work}     & STRING & Yes / No / Hybrid \\
+\texttt{call\_log}        & INT    & Number of logged calls \\
+\texttt{salary}           & BIGINT & Annual salary (USD) \\
+\texttt{date\_of\_marriage}& STRING & Marriage date (various formats) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
 \section{System Architecture \& Environment Setup}
-The preprocessing workflow maps raw unstructured data to high-performance columnar storage in the Hadoop cluster:
-\begin{enumerate}
-    \item \textbf{Ingestion Layer (Python):} Converts the raw binary \texttt{student\_score.xlsx} into a clean CSV format, handling empty columns and rows.
-    \item \textbf{Hadoop HDFS Storage:} Stores the staging dataset under the \texttt{/data/} HDFS namespace.
-    \item \textbf{Staging Layer (Hive):} Creates an external text staging table (\texttt{raw\_data}) pointing to the HDFS CSV directory.
-    \item \textbf{Processing Layer (HiveServer2):} Runs structured data cleaning, deduplication, standardizations, and outlier checks.
-    \item \textbf{Analytics Warehouse (ORC):} Stores the final clean dataset as an optimized ORC table compressed with Snappy.
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Pipeline Architecture}
+The analysis pipeline follows four logical layers:
+\begin{enumerate}[leftmargin=2cm]
+    \item \textbf{Storage Layer (HDFS):} The raw CSV is uploaded to
+          \texttt{/data/employee/} on HDFS.
+    \item \textbf{Staging Layer (Hive):} A text-format external table
+          \texttt{emp\_raw} is mapped over the HDFS path.
+    \item \textbf{Processing Layer (HQL):} Window functions, CTAS queries,
+          and analytical SQL clean and transform the data into ORC tables.
+    \item \textbf{Analytics Layer:} Final HQL queries answer business questions
+          on the cleaned tables.
 \end{enumerate}
 
-% --- FIGURE 1: SYSTEM WORKFLOW ---
+\subsection{Table Lineage}
+\begin{center}
+\texttt{emp\_raw} $\xrightarrow{\text{5 fixes + ROW\_NUMBER}}$
+\texttt{emp\_clean} $\xrightarrow{\text{rn = 1}}$
+\texttt{emp\_no\_dup} $\xrightarrow{\text{SPLIT + REGEXP}}$
+\texttt{emp\_split\_title}
+\end{center}
+
+% Screenshot: Hadoop / HDFS running and the data directory
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{images/pipelineworkflow.png}
-\caption{Hive Preprocessing Architecture: From Source Spreadsheet to Clean Warehouse Storage.}
-\label{fig:workflow}
+\includegraphics[width=0.95\textwidth]{images/hdfs_upload.png}
+\caption{HDFS upload verification -- \texttt{hdfs dfs -ls /data/employee/} confirming
+         \texttt{EmployeeDataset.csv} is stored on the cluster.}
+\label{fig:hdfs_upload}
 \end{figure}
 
-\newpage
-\section{Hive Metastore Configuration \& Startup}
-To connect to the local Hadoop Distributed File System, Apache Hive must be initialized with a relational Metastore database. In our environment, we configure a local embedded Derby instance.
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task 1 -- Data Preprocessing (8 Marks)}
+% ─────────────────────────────────────────────────────────────────────────────
 
-\subsection{Impersonation Workaround (\texttt{hive-site.xml})}
-To allow our query engine to authenticate without proxyuser permissions, we disable user impersonation in the Hive configuration:
-\begin{lstlisting}[language=XML]
-<property>
-    <name>hive.server2.enable.doAs</name>
-    <value>false</value>
-</property>
-\end{lstlisting}
+\subsection{Raw Staging Table Creation}
 
-% --- FIGURE 2: METASTORE INITIALIZATION ---
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\textwidth]{images/metastoreinit.png}
-\caption{Metastore Schema Initialization logs demonstrating successful Derby DB metadata creation.}
-\label{fig:metastoreinit}
-\end{figure}
+All columns are declared as \texttt{STRING} so that dirty values (empty strings,
+mixed casing) survive the ingestion without casting errors:
 
-\section{Step-by-Step Data Preprocessing Tasks}
-
-\subsection{Step 1: Staging Table \& HDFS Load}
-We create the staging table \texttt{raw\_data} mapped to HDFS \texttt{/data/student\_scores.csv}. The column order matches: \texttt{id, name, gender, marks, course}.
-\begin{lstlisting}[language=SQL]
-CREATE TABLE raw_data (
-    id STRING,
-    name STRING,
-    gender STRING,
-    marks STRING,
-    course STRING
+\begin{lstlisting}[caption={Creating the \texttt{emp\_raw} staging table and loading CSV from HDFS}]
+CREATE TABLE emp_raw (
+    job_id            STRING,
+    job_title         STRING,
+    experience_years  STRING,
+    education_level   STRING,
+    skills_count      STRING,
+    industry          STRING,
+    company_size      STRING,
+    location          STRING,
+    remote_work       STRING,
+    call_log          STRING,
+    salary            STRING,
+    date_of_marriage  STRING
 )
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 STORED AS TEXTFILE
 TBLPROPERTIES ("skip.header.line.count"="1");
+
+LOAD DATA INPATH '/data/employee/EmployeeDataset.csv'
+INTO TABLE emp_raw;
 \end{lstlisting}
 
-% --- FIGURE 3: HDFS UPLOAD AND LOAD ---
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{images/hdfsupload.png}
-\caption{Verification of CSV Dataset on Hadoop HDFS showing the uploaded student scores CSV file.}
-\label{fig:hdfsupload}
+\includegraphics[width=0.95\textwidth]{images/raw_table_load.png}
+\caption{Hive output confirming \texttt{emp\_raw} table creation and CSV data load from HDFS.}
+\label{fig:raw_load}
 \end{figure}
 
-\subsection{Step 2: Exploring the Data}
-We query the staging table using a \texttt{SELECT} statement to understand its structure and identify anomalies:
-\begin{lstlisting}[language=SQL]
-SELECT * FROM raw_data;
+\subsection{Five Preprocessing Problems Identified \& Fixed}
+
+\subsubsection{Problem 1 -- Missing Values in \texttt{experience\_years}}
+
+\textbf{Issue:} Two rows (job\_ids \textbf{1005} and \textbf{1006}) contain
+empty \texttt{experience\_years} fields.  Loading them as-is would produce NULL
+integers, silently skewing any average or filter.
+
+\begin{lstlisting}[caption={Detecting missing \texttt{experience\_years}}]
+SELECT job_id, job_title, experience_years, education_level
+FROM emp_raw
+WHERE experience_years IS NULL OR TRIM(experience_years) = '';
 \end{lstlisting}
 
-\subsection{Step 3: Handle Missing Values}
-We locate records with missing marks and substitute empty fields with \texttt{0}:
-\begin{lstlisting}[language=SQL]
--- Find NULL values
-SELECT * FROM raw_data WHERE marks IS NULL OR marks = '';
--- Impute missing values
-SELECT id, name, COALESCE(NULLIF(marks, ''), '0') AS marks FROM raw_data;
-\end{lstlisting}
-
-\subsection{Step 4: Remove Duplicates}
-We check for records with matching IDs and eliminate duplicates:
-\begin{lstlisting}[language=SQL]
--- Check duplicate counts
-SELECT id, COUNT(*) FROM raw_data GROUP BY id HAVING COUNT(*) > 1;
--- De-duplicate
-CREATE TABLE no_duplicates AS SELECT DISTINCT * FROM raw_data;
-\end{lstlisting}
-
-\subsection{Step 5: Inconsistent Formats}
-We standardize text columns to upper/lower casing and map inconsistent gender categories (e.g., \texttt{male}, \texttt{M}) to unified terms (\texttt{Male}, \texttt{Female}):
-\begin{lstlisting}[language=SQL]
-SELECT id, UPPER(name), LOWER(course) FROM raw_data;
-SELECT CASE
-    WHEN LOWER(gender) IN ('m','male') THEN 'Male'
-    WHEN LOWER(gender) IN ('f','female') THEN 'Female'
-    ELSE 'Unknown'
-END AS gender FROM raw_data;
-\end{lstlisting}
-
-\subsection{Step 6: Outliers \& Noisy Data}
-We detect records with out-of-range scores (marks $< 0$ or marks $> 100$) for removal:
-\begin{lstlisting}[language=SQL]
-SELECT * FROM raw_data WHERE CAST(marks AS INT) < 0 OR CAST(marks AS INT) > 100;
-\end{lstlisting}
-
-% --- FIGURE 4: OUTLIER DETECTION ---
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{images/outliers.png}
-\caption{Noisy Data/Outliers detected in the staging dataset, filtering out David's out-of-bound score.}
-\label{fig:outliers}
+\includegraphics[width=0.95\textwidth]{images/missing_experience.png}
+\caption{Query result showing two rows with empty \texttt{experience\_years} -- job\_id 1005 (Business Analyst / PhD) and job\_id 1006 (Backend Developer / High School).}
+\label{fig:missing_exp}
 \end{figure}
 
-\subsection{Step 7: Final Cleaned Table Creation}
-We aggregate all cleaning filters into a CTAS query to create \texttt{cleaned\_student\_scores} in ORC format with Snappy compression:
-\begin{lstlisting}[language=SQL]
-CREATE TABLE cleaned_student_scores
-STORED AS ORC
+\textbf{Fix:} Use \texttt{COALESCE(NULLIF(TRIM(...), ''), '0')} to substitute
+empty strings with \texttt{0} before casting to \texttt{INT}.
+
+\begin{lstlisting}[caption={Imputing missing experience with 0}]
+CAST(COALESCE(NULLIF(TRIM(experience_years), ''), '0') AS INT)
+    AS experience_years
+\end{lstlisting}
+
+\subsubsection{Problem 2 -- Duplicate \texttt{job\_id} Values}
+
+\textbf{Issue:} \texttt{job\_id} should be unique, but IDs \textbf{1005},
+\textbf{1006}, and \textbf{1009} each appear \emph{twice} with different roles
+and data, suggesting data entry errors or system merges.
+
+\begin{lstlisting}[caption={Identifying duplicate job\_ids}]
+SELECT job_id, COUNT(*) AS cnt
+FROM emp_raw
+GROUP BY job_id
+HAVING COUNT(*) > 1
+ORDER BY cnt DESC;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/duplicate_jobids.png}
+\caption{Hive result listing duplicate \texttt{job\_id} values -- IDs 1005, 1006, and 1009 each appear twice.}
+\label{fig:duplicates}
+\end{figure}
+
+\textbf{Fix:} Apply a \texttt{ROW\_NUMBER()} window function partitioned by
+\texttt{job\_id} and keep only the first occurrence (\texttt{rn = 1}).
+
+\begin{lstlisting}[caption={Deduplication using ROW\_NUMBER()}]
+ROW_NUMBER() OVER (PARTITION BY job_id ORDER BY job_id) AS rn
+-- Then filter: WHERE rn = 1
+\end{lstlisting}
+
+\subsubsection{Problem 3 -- Inconsistent Casing in \texttt{education\_level}}
+
+\textbf{Issue:} The same qualification is recorded in multiple formats:
+\texttt{high School}, \texttt{bachelor}, \texttt{PhD}, \texttt{Bachelor} --
+causing group-by queries to split logically identical groups.
+
+\begin{lstlisting}[caption={Revealing distinct raw education\_level values}]
+SELECT DISTINCT education_level FROM emp_raw ORDER BY education_level;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/inconsistent_casing.png}
+\caption{Raw distinct values of \texttt{education\_level} -- note \texttt{high School}, \texttt{bachelor}, and \texttt{PhD} representing the same level with different casing.}
+\label{fig:casing}
+\end{figure}
+
+\textbf{Fix:} Chain \texttt{LOWER()} then \texttt{INITCAP()} to canonicalize
+every value (e.g.\ \texttt{"high School"} $\to$ \texttt{"High School"}).
+
+\begin{lstlisting}[caption={Normalising education\_level casing}]
+INITCAP(LOWER(TRIM(education_level))) AS education_level
+\end{lstlisting}
+
+\subsubsection{Problem 4 -- Outlier Salaries (Implausibly Low Values)}
+
+\textbf{Issue:} Four rows contain salaries below \$1{,}000
+(\textbf{50}, \textbf{99}, \textbf{100}, \textbf{102}), which are clearly
+data entry errors -- likely missing digits (e.g.\ 50 instead of 50{,}000).
+
+\begin{lstlisting}[caption={Detecting outlier salary values}]
+SELECT job_id, job_title, salary
+FROM emp_raw
+WHERE CAST(salary AS BIGINT) < 1000;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/outlier_salary.png}
+\caption{Four rows flagged with implausibly low salary values (below \$1{,}000) -- likely data entry errors with missing digits.}
+\label{fig:salary_outlier}
+\end{figure}
+
+\textbf{Fix:} Set these values to \texttt{NULL} so they are excluded from
+aggregate calculations while the rows are retained for other columns.
+
+\begin{lstlisting}[caption={Nullifying outlier salaries}]
+CASE
+    WHEN CAST(salary AS BIGINT) < 1000 THEN NULL
+    ELSE CAST(salary AS BIGINT)
+END AS salary
+\end{lstlisting}
+
+\subsubsection{Problem 5 -- \texttt{"Remote"} in the \texttt{location} Column}
+
+\textbf{Issue:} Several rows use \texttt{"Remote"} as the value for
+\texttt{location}, but \emph{Remote} describes a \textbf{work arrangement},
+not a geographic country.  This contaminates any country-level aggregation
+(e.g.\ Task 4 -- PhD count by country).
+
+\begin{lstlisting}[caption={Identifying rows where location = "Remote"}]
+SELECT job_id, location, remote_work
+FROM emp_raw
+WHERE LOWER(TRIM(location)) = 'remote';
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/remote_location.png}
+\caption{Rows where \texttt{location} is set to \texttt{"Remote"} -- a work-mode value that should appear only in the \texttt{remote\_work} column.}
+\label{fig:remote_loc}
+\end{figure}
+
+\textbf{Fix:} Replace \texttt{location = 'Remote'} with \texttt{'Unknown'} and
+ensure \texttt{remote\_work} is forced to \texttt{'Yes'} for those rows.
+
+\begin{lstlisting}[caption={Fixing the Remote location problem}]
+CASE
+    WHEN LOWER(TRIM(location)) = 'remote' THEN 'Unknown'
+    ELSE TRIM(location)
+END AS location,
+CASE
+    WHEN LOWER(TRIM(location)) = 'remote' THEN 'Yes'
+    ELSE TRIM(remote_work)
+END AS remote_work
+\end{lstlisting}
+
+\subsection{Final Cleaned Table}
+
+All five fixes are combined in a single CTAS statement producing an ORC table
+with Snappy compression:
+
+\begin{lstlisting}[caption={Creating \texttt{emp\_no\_dup} -- the final cleaned table}]
+CREATE TABLE emp_clean STORED AS ORC
 TBLPROPERTIES ("orc.compress"="SNAPPY") AS
-SELECT 
-    id,
-    UPPER(name) AS name,
-    CASE
-        WHEN LOWER(gender) IN ('m', 'male') THEN 'Male'
-        WHEN LOWER(gender) IN ('f', 'female') THEN 'Female'
-        ELSE 'Unknown'
-    END AS gender,
-    CAST(COALESCE(NULLIF(marks, ''), '0') AS INT) AS marks,
-    LOWER(course) AS course
-FROM (
-    SELECT DISTINCT id, name, gender, marks, course FROM raw_data
-) unique_rows
-WHERE marks = '' OR (CAST(marks AS INT) BETWEEN 0 AND 100);
+SELECT
+    job_id,
+    job_title,
+    CAST(COALESCE(NULLIF(TRIM(experience_years),''),'0') AS INT) AS experience_years,
+    INITCAP(LOWER(TRIM(education_level)))                        AS education_level,
+    CAST(skills_count AS INT)                                    AS skills_count,
+    industry, company_size,
+    CASE WHEN LOWER(TRIM(location))='remote' THEN 'Unknown'
+         ELSE TRIM(location) END                                 AS location,
+    CASE WHEN LOWER(TRIM(location))='remote' THEN 'Yes'
+         ELSE TRIM(remote_work) END                              AS remote_work,
+    CAST(call_log AS INT)                                        AS call_log,
+    CASE WHEN CAST(salary AS BIGINT) < 1000 THEN NULL
+         ELSE CAST(salary AS BIGINT) END                         AS salary,
+    TRIM(date_of_marriage)                                       AS date_of_marriage,
+    ROW_NUMBER() OVER (PARTITION BY job_id ORDER BY job_id)      AS rn
+FROM emp_raw;
+
+-- De-duplicate: keep first occurrence per job_id
+CREATE TABLE emp_no_dup STORED AS ORC
+TBLPROPERTIES ("orc.compress"="SNAPPY") AS
+SELECT job_id, job_title, experience_years, education_level,
+       skills_count, industry, company_size, location,
+       remote_work, call_log, salary, date_of_marriage
+FROM emp_clean WHERE rn = 1;
 \end{lstlisting}
 
-\newpage
-\section{Final Execution Results}
-
-\subsection{Memory Tuning for Local Mode}
-Running the MapReduce job inside a local, resource-capped JVM (capped at 256MB) triggered \texttt{OutOfMemoryError: Java heap space} due to the Map task sort buffer size (default 100MB). We set the sort buffer to 10MB to resolve this:
-\begin{lstlisting}[language=SQL]
-SET mapreduce.task.io.sort.mb=10;
-\end{lstlisting}
-
-\subsection{Cleaned Dataset Output}
-The final cleaned dataset shows perfect de-duplication, format standardizations, and noise removal:
-
-% --- FIGURE 5: FINAL CLEANED DATASET ---
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{images/finaldataset.png}
-\caption{Final Processed Dataset stored in Hive ORC Table containing 7 cleaned records.}
-\label{fig:finaldataset}
+\includegraphics[width=0.95\textwidth]{images/cleaned_table.png}
+\caption{Preview of the final \texttt{emp\_no\_dup} cleaned ORC table -- all five preprocessing
+         problems resolved, data ready for analysis.}
+\label{fig:cleaned_table}
 \end{figure}
 
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task 2 -- Split Job Title into Two Columns (3 Marks)}
+% ─────────────────────────────────────────────────────────────────────────────
+
+The \texttt{job\_title} column contains multi-word strings
+(e.g.\ \textit{``Machine Learning Engineer''}). We split on the \textbf{first
+space} to produce two new columns:
+
+\begin{table}[H]
+\centering
+\caption{Column Split Definition}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{New Column} & \textbf{Content} & \textbf{Example (from ``Machine Learning Engineer'')} \\
+\midrule
+\texttt{first\_title\_word} & First token & \texttt{Machine} \\
+\texttt{remaining\_title}   & All other tokens & \texttt{Learning Engineer} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{lstlisting}[caption={Splitting \texttt{job\_title} using SPLIT and REGEXP\_REPLACE}]
+CREATE TABLE emp_split_title STORED AS ORC
+TBLPROPERTIES ("orc.compress"="SNAPPY") AS
+SELECT
+    job_id,
+    job_title,
+    -- First word (before the first space)
+    SPLIT(TRIM(job_title), ' ')[0]
+        AS first_title_word,
+    -- Remainder (everything after the first space)
+    REGEXP_REPLACE(TRIM(job_title),
+        CONCAT('^', SPLIT(TRIM(job_title), ' ')[0], ' ?'), '')
+        AS remaining_title,
+    experience_years, education_level, skills_count,
+    industry, company_size, location, remote_work,
+    call_log, salary, date_of_marriage
+FROM emp_no_dup;
+
+SELECT job_id, job_title, first_title_word, remaining_title
+FROM emp_split_title
+LIMIT 20;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/split_title.png}
+\caption{Hive output of \texttt{emp\_split\_title} -- \texttt{job\_title} correctly decomposed
+         into \texttt{first\_title\_word} and \texttt{remaining\_title} for all 20 sample rows.}
+\label{fig:split_title}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task 3 -- Count PhD Holders with \textless 10 Years Experience by Country (2 Marks)}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}[caption={PhD employees with less than 10 years of experience, grouped by country}]
+SELECT
+    location            AS country,
+    COUNT(*)            AS phd_under_10yrs_count
+FROM emp_no_dup
+WHERE LOWER(TRIM(education_level)) = 'phd'
+  AND experience_years < 10
+GROUP BY location
+ORDER BY phd_under_10yrs_count DESC;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/phd_experience_country.png}
+\caption{Countries ranked by the number of PhD-qualified employees with fewer than
+         10 years of professional experience.}
+\label{fig:phd_country}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task 4 -- Skills Count in Ascending Order (1 Mark)}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}[caption={Employee records ordered by skills\_count ascending}]
+-- Per-employee listing in ascending order of skill count
+SELECT job_id, job_title, education_level, skills_count
+FROM emp_no_dup
+ORDER BY skills_count ASC;
+
+-- Frequency distribution of skill counts
+SELECT skills_count, COUNT(*) AS frequency
+FROM emp_no_dup
+GROUP BY skills_count
+ORDER BY skills_count ASC;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/skills_count_asc.png}
+\caption{Employee records sorted by \texttt{skills\_count} in ascending order --
+         ranging from 0 to 25 skills per employee.}
+\label{fig:skills_asc}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task 5 -- Growth Rate of Call Log (3 Marks)}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Formula}
+
+The row-to-row \textbf{Growth Rate} within each education group is:
+
+\begin{equation}
+\text{Growth Rate (\%)} =
+\frac{\text{call\_log}_{\,n} - \text{call\_log}_{\,n-1}}
+     {\text{call\_log}_{\,n-1}} \times 100
+\label{eq:growth_rate}
+\end{equation}
+
+where rows are ordered by \texttt{job\_id} within each \texttt{education\_level} partition.
+
+\subsection{HQL Implementation}
+
+\begin{lstlisting}[caption={Computing row-to-row call\_log growth rate with the LAG window function}]
+SELECT
+    education_level,
+    job_id,
+    call_log AS current_call_log,
+    LAG(call_log) OVER (
+        PARTITION BY education_level
+        ORDER BY job_id
+    ) AS prev_call_log,
+    ROUND(
+        CASE
+            WHEN LAG(call_log) OVER (
+                     PARTITION BY education_level ORDER BY job_id
+                 ) IS NULL
+              OR LAG(call_log) OVER (
+                     PARTITION BY education_level ORDER BY job_id
+                 ) = 0
+            THEN NULL
+            ELSE ((call_log - LAG(call_log) OVER (
+                              PARTITION BY education_level ORDER BY job_id
+                          ))
+                  / CAST(LAG(call_log) OVER (
+                              PARTITION BY education_level ORDER BY job_id
+                         ) AS DOUBLE)) * 100.0
+        END
+    , 2) AS growth_rate_pct
+FROM emp_no_dup
+WHERE LOWER(TRIM(education_level)) IN ('phd','bachelor','high school')
+ORDER BY education_level, job_id;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/growth_rate_detail.png}
+\caption{Row-by-row call\_log growth rate for PhD, Bachelor, and High School employees
+         -- computed using the \texttt{LAG()} window function partitioned by education level.}
+\label{fig:growth_rate}
+\end{figure}
+
+\subsection{Average Growth Rate Summary}
+
+\begin{lstlisting}[caption={Average growth rate per education group}]
+SELECT education_level,
+       ROUND(AVG(growth_rate_pct), 2) AS avg_growth_rate_pct
+FROM (
+    SELECT education_level,
+           ROUND(CASE
+               WHEN LAG(call_log) OVER (
+                        PARTITION BY education_level ORDER BY job_id
+                    ) IS NULL
+                 OR LAG(call_log) OVER (
+                        PARTITION BY education_level ORDER BY job_id
+                    ) = 0
+               THEN NULL
+               ELSE ((call_log - LAG(call_log) OVER (
+                                     PARTITION BY education_level ORDER BY job_id
+                                 ))
+                     / CAST(LAG(call_log) OVER (
+                                 PARTITION BY education_level ORDER BY job_id
+                            ) AS DOUBLE)) * 100.0
+           END, 2) AS growth_rate_pct
+    FROM emp_no_dup
+    WHERE LOWER(TRIM(education_level)) IN ('phd','bachelor','high school')
+) growth_sub
+GROUP BY education_level
+ORDER BY education_level;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/growth_rate_summary.png}
+\caption{Average call\_log growth rate summary per education level (PhD, Bachelor, High School).}
+\label{fig:growth_summary}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task 6 -- Predict Future Call Log Values (3 Marks)}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Formula}
+
+Future values are projected using the \textbf{Compound Growth Model}:
+
+\begin{equation}
+\text{Future Value}_{n} =
+\text{Last Value} \times
+\left(1 + \frac{\overline{g}}{100}\right)^{n}
+\label{eq:future_value}
+\end{equation}
+
+where $\overline{g}$ is the average growth rate (\%) for the education group and
+$n \in \{1, 2, 3\}$ represents future periods.
+
+\subsection{HQL Implementation}
+
+\begin{lstlisting}[caption={Predicting future call\_log values using a CTE and POWER()}]
+WITH growth_stats AS (
+    SELECT education_level, job_id, call_log,
+           LAG(call_log) OVER (
+               PARTITION BY education_level ORDER BY job_id
+           ) AS prev_call_log
+    FROM emp_no_dup
+    WHERE LOWER(TRIM(education_level))
+          IN ('phd', 'bachelor', 'high school')
+),
+growth_pct AS (
+    SELECT education_level, job_id, call_log,
+           CASE WHEN prev_call_log IS NULL OR prev_call_log = 0 THEN NULL
+                ELSE ((call_log - prev_call_log)
+                      / CAST(prev_call_log AS DOUBLE)) * 100.0
+           END AS growth_rate_pct
+    FROM growth_stats
+),
+summary AS (
+    SELECT education_level,
+           COUNT(*)                       AS n_records,
+           ROUND(AVG(call_log), 4)        AS avg_call_log,
+           MAX(call_log)                  AS last_call_log,
+           ROUND(AVG(growth_rate_pct), 4) AS avg_growth_rate_pct
+    FROM growth_pct
+    GROUP BY education_level
+)
+SELECT
+    education_level,
+    n_records,
+    avg_call_log,
+    last_call_log,
+    ROUND(avg_growth_rate_pct, 2)                                    AS avg_growth_pct,
+    ROUND(last_call_log * POWER(1 + avg_growth_rate_pct/100.0, 1), 4) AS predicted_p1,
+    ROUND(last_call_log * POWER(1 + avg_growth_rate_pct/100.0, 2), 4) AS predicted_p2,
+    ROUND(last_call_log * POWER(1 + avg_growth_rate_pct/100.0, 3), 4) AS predicted_p3
+FROM summary
+ORDER BY education_level;
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{images/future_prediction.png}
+\caption{Predicted future call\_log values for periods 1, 2, and 3 -- computed via compound
+         growth from the historical average growth rate per education level.}
+\label{fig:prediction}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Script Files Summary}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{table}[H]
+\centering
+\caption{Project Scripts}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\textbf{Script} & \textbf{Purpose} \\
+\midrule
+\texttt{scripts/upload\_employee\_to\_hdfs.sh} &
+    Starts HDFS, creates \texttt{/data/employee/} directory, and uploads
+    \texttt{EmployeeDataset.csv} to HDFS. Verifies upload with \texttt{hdfs dfs -ls}. \\[4pt]
+\texttt{scripts/employee\_analysis.hql} &
+    Main Hive script.  Sections 0--7 cover table creation, all five
+    preprocessing fixes, title split, and analytics queries. \\[4pt]
+\texttt{scripts/run\_employee\_analysis.sh} &
+    One-shot runner: calls the upload script then executes the HQL file
+    via \texttt{hive -f}, piping output to a timestamped log file. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{To execute the complete pipeline:}
+\begin{lstlisting}[language=bash, caption={Running the full analysis from the project root}]
+bash scripts/run_employee_analysis.sh
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Conclusion}
-This lab successfully demonstrates data cleaning and preprocessing inside Apache Hive. By leveraging HQL functions like \texttt{COALESCE}, \texttt{NULLIF}, \texttt{DISTINCT}, and \texttt{CASE} conditional expressions, we transformed raw Excel data into a cleaned table, ready for analytical queries and machine learning models.
+% ─────────────────────────────────────────────────────────────────────────────
+
+This practical demonstrated the full power of the Hadoop/Hive ecosystem for
+big data preprocessing and analysis.  Key takeaways:
+
+\begin{itemize}
+    \item \textbf{Five preprocessing problems} were systematically identified
+          and resolved using HQL built-in functions
+          (\texttt{COALESCE}, \texttt{INITCAP}, \texttt{ROW\_NUMBER}, \texttt{CASE}).
+    \item \textbf{Window functions} (\texttt{LAG}, \texttt{ROW\_NUMBER})
+          enable row-to-row comparisons without leaving the Hive SQL paradigm.
+    \item \textbf{String manipulation} (\texttt{SPLIT}, \texttt{REGEXP\_REPLACE})
+          allows flexible column decomposition (Task 2 -- title split).
+    \item \textbf{CTEs} (\texttt{WITH} clauses) improve query readability for
+          multi-step analytical workflows (Task 6 -- future prediction).
+    \item \textbf{ORC + Snappy} storage reduces disk footprint and accelerates
+          subsequent reads compared to plain text files.
+\end{itemize}
+
+The compound growth model used for prediction is straightforward and interpretable,
+making it well-suited for a business analytics context.  For production use on
+larger, time-indexed datasets, a regression or Holt-Winters time-series model
+would provide more accurate forecasts.
 
 \end{document}

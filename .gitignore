@@ -1,0 +1,21 @@
+# Logs
+*.log
+logs/
+
+# Temporary and generated files
+*.aux
+*.out
+*.toc
+.vscode/
+scripts/output/
+scripts/metastore_db/
+scripts/metastore_db_bak/
+scripts/.venv_predict/
+
+# Ignore large datasets if needed (uncomment below if they are > 100MB)
+# data/BigData_Student_Performance_Dataset_1000.csv
+# data/student_performance.csv
+
+# Compiled python
+__pycache__/
+*.pyc

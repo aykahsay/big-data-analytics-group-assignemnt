@@ -1,81 +1,43 @@
-# Data Preprocessing Using Apache Hive (Step-by-Step Guide)
+# Big Data Analytics - Student Performance
 
-This repository contains the complete implementation and verified solution for the **Hive Data Preprocessing Group Practical**.
+This project demonstrates a Descriptive and Predictive analysis pipeline of student performance data using Hadoop and Apache Hive. 
 
-The pipeline ingests raw student score records from an Excel spreadsheet, structures it to match Hive staging schemas, cleans invalid records, standardizes text/gender columns, imputes missing values, and saves the cleaned dataset as an optimized ORC table compressed with Snappy on HDFS.
+## 🐳 Docker Setup
+This project has been fully containerized so you don't need to manually install Hadoop or configure a PostgreSQL metastore on your host machine.
 
----
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed on Windows (or Docker Engine on Linux).
 
-## 📁 Repository Structure
-
-```text
-big-data-analytics-group-assignemnt/
-│
-├── data/
-│   └── student_scores.csv       # Clean staging CSV dataset
-│
-├── scripts/
-│   ├── inspect_excel.py         # Python script to extract and clean columns from Excel
-│   ├── preprocess.hql           # Step-by-Step Hive SQL preprocessing queries
-│   ├── run_preprocess.sh        # Automator to load CSV to HDFS and run HQL via Beeline
-│   ├── upload_to_hdfs.sh        # Helper script to load clean CSV into HDFS
-│   └── restart_hiveserver2.sh   # Utility script to restart HiveServer2 with safe configs
-│
-├── project_report.tex           # LaTeX source for the lab report with figure placeholders
-└── README.md                    # Setup and execution guide (this file)
-```
-
----
-
-## 🛠️ Step-by-Step Execution Guide
-
-### 1. Ingest Data from Excel
-The source Excel file is located at `C:\Users\Admin\.gemini\antigravity-ide\scratch\BigDataProject\big-data-architecture\data\student_score.xlsx`.
-Run the Python script in WSL to clean the padding columns/rows, rename variables, and write it to `data/student_scores.csv` matching the Hive table schema order:
-```bash
-python3 scripts/inspect_excel.py
-```
-
-### 2. Configure and Restart HiveServer2
-To prevent Hadoop proxyuser impersonation blockages and local Derby metastore database locking issues:
-1. Ensure `/opt/hive/conf/hive-site.xml` contains:
-   ```xml
-   <property>
-       <name>hive.server2.enable.doAs</name>
-       <value>false</value>
-   </property>
-   ```
-2. Restart HiveServer2 using the automation utility:
+### Running the Cluster
+1. Open a terminal in this directory.
+2. Spin up the cluster:
    ```bash
-   bash scripts/restart_hiveserver2.sh
+   docker-compose up -d
    ```
-   *(This script will stop any locked RunJar instances, launch a background HiveServer2 service, and wait for port 10000 to become active).*
+   This will start a Hadoop Namenode, Datanode, PostgreSQL Database (for Hive Metastore), and a HiveServer2 instance.
 
-### 3. Run the Preprocessing Job
-Execute the main run script:
-```bash
-bash scripts/run_preprocess.sh
-```
-This script will automatically:
-1. Create the HDFS directory `/data/`.
-2. Upload the staging `student_scores.csv` to HDFS.
-3. Launch Beeline and execute all the queries defined in `scripts/preprocess.hql`.
+3. Wait 1-2 minutes for the Metastore to initialize.
 
----
+4. Run the queries inside the Hive container:
+   ```bash
+   # Upload data to HDFS
+   docker exec -it hive-server bash -c "hdfs dfs -mkdir -p /user/hive/student_data && hdfs dfs -put /data/student_performance.csv /user/hive/student_data/"
+   
+   # Execute the Hive queries
+   docker exec -it hive-server beeline -u jdbc:hive2://localhost:10000 -n hive -f /scripts/student_queries.sql
+   ```
 
-## 📊 Preprocessing Tasks Summary
+5. When you are done, tear down the cluster:
+   ```bash
+   docker-compose down
+   ```
 
-The SQL pipeline (`scripts/preprocess.hql`) handles all required lab tasks:
-* **Step 1 (Load Staging Table)**: Creates `raw_data` text table.
-* **Step 2 (Explore Data)**: Queries raw rows to check schema mapping.
-* **Step 3 (Missing Values)**: Uses `COALESCE` to impute missing marks (Mary's empty cell) to `0`.
-* **Step 4 (Deduplication)**: Uses `SELECT DISTINCT` to merge John's duplicate records.
-* **Step 5 (Format Standardization)**: Converts names to `UPPERCASE`, courses to `lowercase`, and maps inconsistent genders (`male`, `M`) to `Male`/`Female` using `CASE` statements.
-* **Step 6 (Noise Detection)**: Filters out outliers (David's score of `120`).
-* **Step 7 (CTAS Output)**: Saves 7 clean student records to a snappy-compressed ORC table `cleaned_student_scores`.
+## 📊 Analytics Executed
+- **Task 1:** Count Students by Department
+- **Task 2:** Average GPA by Department
+- **Task 3:** Students with Attendance Below 60%
+- **Task 4:** Placement Rate by Program
+- **Task 5:** Ranking Students Within Departments
 
-### Memory Allocation Workaround
-To prevent MapReduce from throwing `OutOfMemoryError: Java heap space` on memory-limited WSL environments, the script sets sorting memory limits:
-```sql
-SET mapreduce.task.io.sort.mb=10;
-```
+## 📝 Outputs
+All raw outputs, LaTeX reports, and PNG visualizations generated from the analysis are included in the `images/` directory and `student_report.tex`.

@@ -1,0 +1,100 @@
+job_id,job_title,experience_years,education_level,skills_count,industry,company_size,location,remote_work,call_log,salary,date_of_marriage
+1005,AI Engineer,10,Bachelor,2,Healthcare,Medium,India,Hybrid,2,109413,1/1/2020
+1006,Data Analyst,5,Bachelor,17,Telecom,Small,Australia,No,4,100,10/31/2020
+1009,Product Manager,15,Bachelor,7,Manufacturing,Large,Sweden,Yes,6,165069,18/1/2020
+1009,Machine Learning Engineer,4,Bachelor,18,Healthcare,Enterprise,Canada,Hybrid,8,202463,10/31/2020
+1007,Frontend Developer,18,PhD,4,Media,Medium,Singapore,No,5,148123,12/12/2020
+1005,Business Analyst,,PhD,13,Retail,Medium,Canada,Yes,10,50,29/1/2020
+1014,Frontend Developer,18,PhD,2,Retail,Enterprise,India,Hybrid,15,128377,29/1/2020
+1010,AI Engineer,0,High School,4,Education,Enterprise,USA,No,3,102,2/28/2020
+1006,Backend Developer,,high School,16,Manufacturing,Enterprise,Canada,No,5,165375,1/1/2020
+1015,Frontend Developer,1,High School,10,Healthcare,Large,Netherlands,Yes,7,105755,18/1/2020
+1013,AI Engineer,5,Diploma,14,Telecom,Enterprise,Singapore,Yes,0,99,12/12/2020
+1016,Business Analyst,19,Master,7,Finance,Large,Netherlands,Yes,5,157417,2/28/2020
+1017,Product Manager,8,High School,3,Healthcare,Medium,Canada,Yes,3,154190,1/1/2020
+1018,Data Analyst,3,Bachelor,3,Education,Startup,Singapore,Yes,4,87600,10/31/2020
+1019,Business Analyst,14,PhD,5,Healthcare,Enterprise,India,No,1,106481,12/12/2020
+1020,Business Analyst,0,Bachelor,9,Technology,Medium,Remote,No,4,85143,29/1/2020
+1021,Machine Learning Engineer,11,PhD,16,Consulting,Medium,Germany,Hybrid,3,191757,18/1/2020
+1022,DevOps Engineer,10,Bachelor,1,Education,Large,UK,No,2,155931,2/28/2020
+1023,Product Manager,9,Master,12,Finance,Small,Singapore,Yes,1,141207,1/1/2020
+1024,Software Engineer,11,High School,10,Media,Large,Sweden,No,1,124532,10/31/2020
+1025,Business Analyst,4,Bachelor,15,Retail,Medium,UK,Hybrid,0,108203,12/12/2020
+1026,Cybersecurity Analyst,17,Diploma,7,Government,Small,Germany,Hybrid,5,161268,29/1/2020
+1027,DevOps Engineer,10,bachelor,8,Government,Small,Germany,Yes,1,151828,18/1/2020
+1028,Software Engineer,5,High School,2,Retail,Enterprise,Sweden,Hybrid,1,115827,2/28/2020
+1029,Cybersecurity Analyst,12,High School,15,Technology,Small,Australia,Hybrid,1,125030,1/1/2020
+1030,Product Manager,13,Master,8,Retail,Medium,India,Hybrid,3,113838,10/31/2020
+1031,Data Scientist,2,Bachelor,14,Education,Startup,Remote,Yes,5,109478,12/12/2020
+1032,Cybersecurity Analyst,9,PhD,19,Technology,Medium,Germany,No,2,168253,29/1/2020
+1033,Backend Developer,7,Diploma,15,Telecom,Medium,Australia,No,3,119988,18/1/2020
+1034,DevOps Engineer,4,Diploma,19,Technology,Large,Australia,Hybrid,2,141409,2/28/2020
+1035,Cybersecurity Analyst,4,PhD,8,Media,Startup,Australia,No,4,121972,1/1/2020
+1036,Cloud Engineer,8,PhD,3,Finance,Medium,UK,No,0,162923,10/31/2020
+1037,Data Scientist,13,Master,3,Government,Large,India,Yes,0,111158,12/12/2020
+1038,Frontend Developer,14,Diploma,17,Finance,Startup,India,Yes,2,84456,29/1/2020
+1039,Frontend Developer,18,Diploma,18,Government,Large,Sweden,No,1,158451,18/1/2020
+1040,Backend Developer,10,Master,4,Technology,Small,Australia,Hybrid,1,115823,2/28/2020
+1041,Cybersecurity Analyst,0,PhD,13,Telecom,Large,Singapore,Hybrid,2,143181,1/1/2020
+1042,Cybersecurity Analyst,11,Bachelor,10,Healthcare,Medium,Canada,Yes,0,167629,10/31/2020
+1043,Machine Learning Engineer,15,PhD,15,Consulting,Medium,Germany,Hybrid,5,213920,12/12/2020
+1044,Cybersecurity Analyst,10,Master,12,Telecom,Enterprise,Australia,Yes,5,184393,29/1/2020
+1045,AI Engineer,5,Diploma,10,Government,Small,Germany,Hybrid,5,143403,18/1/2020
+1046,Data Analyst,2,PhD,4,Telecom,Small,Netherlands,Hybrid,5,96611,2/28/2020
+1047,Cloud Engineer,5,PhD,4,Retail,Small,Germany,Yes,4,152413,1/1/2020
+1048,Machine Learning Engineer,15,High School,15,Technology,Enterprise,Germany,Yes,2,212249,10/31/2020
+1049,Product Manager,8,High School,14,Healthcare,Large,Singapore,Hybrid,1,136543,12/12/2020
+1050,Machine Learning Engineer,8,Bachelor,17,Telecom,Small,Canada,No,4,177406,29/1/2020
+1051,AI Engineer,9,Master,10,Consulting,Large,Netherlands,Yes,3,194075,18/1/2020
+1052,Product Manager,13,Diploma,3,Consulting,Startup,Canada,Yes,0,145069,2/28/2020
+1053,Cloud Engineer,14,Diploma,14,Education,Medium,Remote,No,4,155886,1/1/2020
+1054,AI Engineer,15,High School,13,Manufacturing,Small,Remote,Hybrid,2,152004,10/31/2020
+1055,Software Engineer,11,Diploma,11,Government,Startup,Canada,No,1,121570,12/12/2020
+1056,Data Analyst,17,Master,6,Finance,Large,Australia,Hybrid,4,149491,29/1/2020
+1057,Cloud Engineer,11,Diploma,8,Government,Small,Remote,No,0,127838,18/1/2020
+1058,Cybersecurity Analyst,12,High School,9,Healthcare,Enterprise,Singapore,No,2,163138,2/28/2020
+1059,Software Engineer,20,Master,6,Manufacturing,Enterprise,Remote,Hybrid,2,194364,1/1/2020
+1060,Backend Developer,0,PhD,11,Education,Large,UK,No,3,159274,10/31/2020
+1061,Cloud Engineer,10,Master,7,Telecom,Enterprise,Germany,No,0,190270,12/12/2020
+1062,Backend Developer,12,Bachelor,3,Education,Enterprise,Canada,Hybrid,4,186953,29/1/2020
+1063,Product Manager,8,Master,3,Healthcare,Large,Canada,No,4,186117,18/1/2020
+1064,Software Engineer,14,PhD,16,Media,Medium,Sweden,No,4,165569,2/28/2020
+1065,Data Analyst,2,Master,6,Media,Startup,Australia,Hybrid,1,89018,1/1/2020
+1066,Cybersecurity Analyst,4,Diploma,12,Consulting,Small,Netherlands,No,2,115238,10/31/2020
+1067,Cybersecurity Analyst,12,Master,15,Media,Small,Germany,No,3,165648,12/12/2020
+1068,AI Engineer,20,Diploma,5,Media,Startup,India,Hybrid,5,112984,29/1/2020
+1069,Cybersecurity Analyst,16,Master,1,Media,Small,Remote,Hybrid,3,147049,18/1/2020
+1070,Business Analyst,14,Diploma,18,Media,Medium,USA,Yes,2,153999,2/28/2020
+1071,Machine Learning Engineer,15,High School,6,Finance,Small,Netherlands,Yes,1,147962,1/1/2020
+1072,Data Scientist,11,Master,18,Finance,Large,Sweden,Hybrid,5,168153,10/31/2020
+1073,Data Analyst,12,High School,1,Technology,Medium,Australia,Yes,4,124202,12/12/2020
+1074,Software Engineer,6,Master,16,Retail,Large,USA,Yes,4,200988,29/1/2020
+1075,Business Analyst,12,High School,3,Technology,Large,Sweden,Hybrid,2,110222,18/1/2020
+1076,Data Analyst,14,Bachelor,2,Manufacturing,Medium,Sweden,Hybrid,0,101805,2/28/2020
+1077,Software Engineer,8,Master,2,Consulting,Small,Singapore,Yes,2,119579,1/1/2020
+1078,DevOps Engineer,9,PhD,4,Healthcare,Enterprise,UK,Yes,1,208215,10/31/2020
+1079,DevOps Engineer,18,High School,6,Retail,Startup,Sweden,Hybrid,5,127545,12/12/2020
+1080,Backend Developer,2,Diploma,18,Healthcare,Medium,Australia,Hybrid,2,102766,29/1/2020
+1081,Data Analyst,0,High School,5,Telecom,Large,UK,Hybrid,3,91705,18/1/2020
+1082,DevOps Engineer,10,Bachelor,4,Consulting,Large,UK,Yes,0,171414,2/28/2020
+1083,Software Engineer,1,Diploma,3,Consulting,Enterprise,Remote,Yes,4,128205,1/1/2020
+1084,Backend Developer,9,Master,15,Education,Medium,UK,Hybrid,2,152842,10/31/2020
+1085,Cybersecurity Analyst,0,Diploma,19,Education,Enterprise,Canada,Yes,2,163299,12/12/2020
+1086,Software Engineer,8,High School,18,Retail,Enterprise,Singapore,No,1,134205,29/1/2020
+1087,Backend Developer,4,PhD,12,Telecom,Startup,India,Hybrid,1,77939,18/1/2020
+1088,Data Analyst,20,PhD,1,Manufacturing,Medium,USA,Yes,0,191096,2/28/2020
+1089,Business Analyst,3,Diploma,14,Consulting,Medium,UK,No,5,111115,1/1/2020
+1090,AI Engineer,12,High School,2,Finance,Medium,Netherlands,Yes,3,153247,10/31/2020
+1091,Cybersecurity Analyst,13,Bachelor,9,Consulting,Large,Sweden,No,3,159278,12/12/2020
+1092,Cloud Engineer,17,Master,9,Manufacturing,Large,Sweden,No,5,184436,29/1/2020
+1093,Business Analyst,20,High School,3,Technology,Small,Canada,Hybrid,1,138816,18/1/2020
+1094,Product Manager,1,Master,6,Technology,Medium,Australia,No,3,129229,2/28/2020
+1095,Software Engineer,11,PhD,8,Healthcare,Medium,Canada,No,3,171686,1/1/2020
+1096,Product Manager,2,Master,13,Telecom,Medium,Remote,Yes,0,139641,10/31/2020
+1097,Business Analyst,8,Bachelor,25,Government,Large,Germany,Hybrid,2,143723,12/12/2020
+1098,Backend Developer,18,Bachelor,8,Consulting,Large,India,No,3,110112,29/1/2020
+1099,Cloud Engineer,17,High School,2,Retail,Startup,Germany,Hybrid,3,133187,18/1/2020
+1100,Cybersecurity Analyst,3,Master,18,Retail,Large,UK,Hybrid,3,167315,2/28/2020
+1101,Cybersecurity Analyst,3,High School,5,Manufacturing,Enterprise,Netherlands,Hybrid,1,118379,10/31/2020
+1102,Cybersecurity Analyst,10,Diploma,3,Healthcare,Enterprise,India,No,0,106400,12/12/2020
+1103,Cloud Engineer,17,Master,17,Retail,Medium,Germany,No,2,187913,29/1/2020

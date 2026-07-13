@@ -1,0 +1,1176 @@
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://
+Hive Session ID = b59dfc9d-22bd-4b11-b81d-3b73ba3936fb
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.apache.hadoop.hive.common.StringInternUtils (file:/opt/hive/lib/hive-common-4.0.1.jar) to field java.net.URI.string
+WARNING: Please consider reporting this to the maintainers of org.apache.hadoop.hive.common.StringInternUtils
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+26/07/13 12:47:52 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.cpc.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:47:52 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.hll.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:47:52 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.IntersectSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:47:52 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.EstimateSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:47:52 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.ExcludeSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:47:52 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:47:52 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.tuple.ArrayOfDoublesSketchToValuesUDTF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:47:53 [main]: WARN session.SessionState: Configuration hive.reloadable.aux.jars.path not specified
+Connected to: Apache Hive (version 4.0.1)
+Driver: Hive JDBC (version 4.0.1)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+0: jdbc:hive2://> CREATE DATABASE IF NOT EXISTS student_analysis;
+26/07/13 12:47:56 [HiveServer2-Background-Pool: Thread-38]: WARN exec.DDLTask: metastore.warehouse.external.dir is not set, falling back to metastore.warehouse.dir. This could cause external tables to use to managed tablespace.
+No rows affected (3.937 seconds)
+0: jdbc:hive2://> USE student_analysis;
+No rows affected (0.04 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> DROP TABLE IF EXISTS student_performance_raw;
+No rows affected (0.091 seconds)
+0: jdbc:hive2://> CREATE EXTERNAL TABLE student_performance_raw (
+. . . . . . . . >     student_id STRING,
+. . . . . . . . >     name STRING,
+. . . . . . . . >     gender STRING,
+. . . . . . . . >     age INT,
+. . . . . . . . >     department STRING,
+. . . . . . . . >     program STRING,
+. . . . . . . . >     year INT,
+. . . . . . . . >     semester INT,
+. . . . . . . . >     attendance INT,
+. . . . . . . . >     assignment INT,
+. . . . . . . . >     cat INT,
+. . . . . . . . >     finalexam INT,
+. . . . . . . . >     studyhours INT,
+. . . . . . . . >     internetaccess STRING,
+. . . . . . . . >     device STRING,
+. . . . . . . . >     parentincome INT,
+. . . . . . . . >     scholarship STRING,
+. . . . . . . . >     skillscount INT,
+. . . . . . . . >     projects INT,
+. . . . . . . . >     lmslogins INT,
+. . . . . . . . >     libraryvisits INT,
+. . . . . . . . >     location STRING,
+. . . . . . . . >     graduated STRING,
+. . . . . . . . >     placement STRING,
+. . . . . . . . >     gpa DOUBLE,
+. . . . . . . . >     total DOUBLE,
+. . . . . . . . >     grade STRING
+. . . . . . . . > )
+. . . . . . . . > ROW FORMAT DELIMITED
+. . . . . . . . > FIELDS TERMINATED BY ','
+. . . . . . . . > TBLPROPERTIES("skip.header.line.count"="1");
+No rows affected (0.662 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> LOAD DATA INPATH '/user/hive/student_data/student_performance.csv' INTO TABLE student_performance_raw; 
+Loading data to table student_analysis.student_performance_raw
+26/07/13 12:48:01 [HiveServer2-Background-Pool: Thread-50]: WARN metadata.Hive: Cannot get a table snapshot for student_performance_raw
+26/07/13 12:48:01 [HiveServer2-Background-Pool: Thread-50]: WARN metadata.Hive: Cannot get a table snapshot for student_performance_raw
+No rows affected (1.695 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- Clean Data Table
+0: jdbc:hive2://> DROP TABLE IF EXISTS student_performance;
+No rows affected (0.048 seconds)
+0: jdbc:hive2://> CREATE TABLE student_performance AS
+. . . . . . . . > SELECT * FROM student_performance_raw;
+26/07/13 12:48:06 [59fed901-81b4-44e3-b625-7c8adc49621d main]: WARN calcite.RelOptHiveTable: No Stats for student_analysis@student_performance_raw, Columns: libraryvisits, parentincome, projects, gender, year, skillscount, program, internetaccess, total, cat, scholarship, gpa, department, finalexam, assignment, studyhours, student_id, graduated, grade, name, semester, location, placement, device, age, attendance, lmslogins
+No Stats for student_analysis@student_performance_raw, Columns: libraryvisits, parentincome, projects, gender, year, skillscount, program, internetaccess, total, cat, scholarship, gpa, department, finalexam, assignment, studyhours, student_id, graduated, grade, name, semester, location, placement, device, age, attendance, lmslogins
+26/07/13 12:48:07 [HiveServer2-Background-Pool: Thread-60]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124802_bf3dd55e-a09e-4c91-b5a3-881dea0f3726
+Total jobs = 3
+Launching Job 1 out of 3
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:48:08 [HiveServer2-Background-Pool: Thread-60]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:08 [HiveServer2-Background-Pool: Thread-60]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:48:11 [HiveServer2-Background-Pool: Thread-60]: WARN mapreduce.Counters: Group org.apache.hadoop.mapred.Task$Counter is deprecated. Use org.apache.hadoop.mapreduce.TaskCounter instead
+2026-07-13 12:48:11,366 Stage-1 map = 0%,  reduce = 0%
+26/07/13 12:48:12 [pool-12-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:48:12,387 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 3.32 sec
+2026-07-13 12:48:13,395 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 3.92 sec
+MapReduce Total cumulative CPU time: 3 seconds 920 msec
+Ended Job = job_local1263731043_0001
+Stage-4 is selected by condition resolver.
+Stage-3 is filtered out by condition resolver.
+Stage-5 is filtered out by condition resolver.
+Moving data to directory hdfs://localhost:9000/user/hive/warehouse/student_analysis.db/.hive-staging_hive_2026-07-13_12-48-02_485_3869996648658643286-1/-ext-10002
+Moving data to directory hdfs://localhost:9000/user/hive/warehouse/student_analysis.db/student_performance
+26/07/13 12:48:13 [HiveServer2-Background-Pool: Thread-60]: WARN metadata.Hive: Cannot get a table snapshot for student_performance
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 3.92 sec   HDFS Read: 434516 HDFS Write: 430350 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 920 msec
+2,002 rows affected (11.358 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- 1. Count Students by Department ---';
+26/07/13 12:48:13 [59fed901-81b4-44e3-b625-7c8adc49621d main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++------------------------------------------+
+|                   _c0                    |
++------------------------------------------+
+| --- 1. Count Students by Department ---  |
++------------------------------------------+
+1 row selected (0.147 seconds)
+0: jdbc:hive2://> SELECT
+. . . . . . . . > department,
+. . . . . . . . > COUNT(*) AS total_students
+. . . . . . . . > FROM student_performance
+. . . . . . . . > GROUP BY department
+. . . . . . . . > ORDER BY total_students DESC;
+26/07/13 12:48:14 [HiveServer2-Background-Pool: Thread-96]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124814_da90fc93-9004-4fe2-96b0-e42d4daab49d
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:48:14 [HiveServer2-Background-Pool: Thread-96]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:14 [HiveServer2-Background-Pool: Thread-96]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:14 [HiveServer2-Background-Pool: Thread-96]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:48:15 [pool-19-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:48:16,002 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.87 sec
+MapReduce Total cumulative CPU time: 870 msec
+Ended Job = job_local383519986_0002
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:48:16 [HiveServer2-Background-Pool: Thread-96]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:16 [HiveServer2-Background-Pool: Thread-96]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:16 [HiveServer2-Background-Pool: Thread-96]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:48:16 [pool-23-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:48:17,371 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.29 sec
+MapReduce Total cumulative CPU time: 290 msec
+Ended Job = job_local2084756634_0003
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.87 sec   HDFS Read: 864866 HDFS Write: 430350 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.29 sec   HDFS Read: 864866 HDFS Write: 430557 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 160 msec
++-------------+-----------------+
+| department  | total_students  |
++-------------+-----------------+
+| CS          | 438             |
+| SE          | 410             |
+| DS          | 400             |
+| IT          | 378             |
+| AI          | 374             |
+| Department  | 2               |
++-------------+-----------------+
+6 rows selected (3.31 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- 2. Average GPA by Department ---';
+26/07/13 12:48:17 [59fed901-81b4-44e3-b625-7c8adc49621d main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++---------------------------------------+
+|                  _c0                  |
++---------------------------------------+
+| --- 2. Average GPA by Department ---  |
++---------------------------------------+
+1 row selected (0.105 seconds)
+0: jdbc:hive2://> SELECT
+. . . . . . . . > department,
+. . . . . . . . > ROUND(AVG(gpa),2) AS average_gpa
+. . . . . . . . > FROM student_performance
+. . . . . . . . > GROUP BY department
+. . . . . . . . > ORDER BY average_gpa DESC;
+26/07/13 12:48:17 [HiveServer2-Background-Pool: Thread-130]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124817_5c4f1aa0-a7c3-4f39-b925-ec809f956fb5
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:48:17 [HiveServer2-Background-Pool: Thread-130]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:17 [HiveServer2-Background-Pool: Thread-130]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:17 [HiveServer2-Background-Pool: Thread-130]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:48:18 [pool-27-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:48:19,227 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.43 sec
+MapReduce Total cumulative CPU time: 430 msec
+Ended Job = job_local2011126805_0004
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:48:19 [HiveServer2-Background-Pool: Thread-130]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:19 [HiveServer2-Background-Pool: Thread-130]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:19 [HiveServer2-Background-Pool: Thread-130]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:48:19 [pool-31-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:48:20,560 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 1.23 sec
+MapReduce Total cumulative CPU time: 1 seconds 230 msec
+Ended Job = job_local122790134_0005
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.43 sec   HDFS Read: 1295432 HDFS Write: 430764 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 1.23 sec   HDFS Read: 1295432 HDFS Write: 430975 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 660 msec
++-------------+--------------+
+| department  | average_gpa  |
++-------------+--------------+
+| Department  | NULL         |
+| SE          | 2.5          |
+| DS          | 2.5          |
+| CS          | 2.48         |
+| AI          | 2.48         |
+| IT          | 2.47         |
++-------------+--------------+
+6 rows selected (2.936 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- 3. Students with Attendance Below 60% ---';
+26/07/13 12:48:20 [59fed901-81b4-44e3-b625-7c8adc49621d main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++------------------------------------------------+
+|                      _c0                       |
++------------------------------------------------+
+| --- 3. Students with Attendance Below 60% ---  |
++------------------------------------------------+
+1 row selected (0.126 seconds)
+0: jdbc:hive2://> SELECT
+. . . . . . . . > student_id,
+. . . . . . . . > name,
+. . . . . . . . > department,
+. . . . . . . . > attendance
+. . . . . . . . > FROM student_performance
+. . . . . . . . > WHERE attendance < 60
+. . . . . . . . > ORDER BY attendance;
+26/07/13 12:48:21 [HiveServer2-Background-Pool: Thread-162]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124821_0c118e69-c08c-40e5-8836-8533cbfe84e7
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:48:21 [HiveServer2-Background-Pool: Thread-162]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:21 [HiveServer2-Background-Pool: Thread-162]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:21 [HiveServer2-Background-Pool: Thread-162]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:48:22 [pool-35-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:48:22,915 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.9 sec
+MapReduce Total cumulative CPU time: 900 msec
+Ended Job = job_local1293373516_0006
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.9 sec   HDFS Read: 1726006 HDFS Write: 457473 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 900 msec
++-------------+---------------+-------------+-------------+
+| student_id  |     name      | department  | attendance  |
++-------------+---------------+-------------+-------------+
+| S00763      | Student_763   | DS          | 40          |
+| S00599      | Student_599   | SE          | 40          |
+| S00621      | Student_621   | AI          | 40          |
+| S00229      | Student_229   | SE          | 40          |
+| S00035      | Student_35    | AI          | 40          |
+| S00745      | Student_745   | DS          | 40          |
+| S00140      | Student_140   | IT          | 40          |
+| S00621      | Student_621   | AI          | 40          |
+| S00134      | Student_134   | SE          | 40          |
+| S00916      | Student_916   | SE          | 40          |
+| S00140      | Student_140   | IT          | 40          |
+| S00911      | Student_911   | DS          | 40          |
+| S00910      | Student_910   | CS          | 40          |
+| S00141      | Student_141   | IT          | 40          |
+| S00152      | Student_152   | CS          | 40          |
+| S00134      | Student_134   | SE          | 40          |
+| S00306      | Student_306   | SE          | 40          |
+| S00870      | Student_870   | SE          | 40          |
+| S00070      | Student_70    | IT          | 40          |
+| S00070      | Student_70    | IT          | 40          |
+| S00035      | Student_35    | AI          | 40          |
+| S00229      | Student_229   | SE          | 40          |
+| S00152      | Student_152   | CS          | 40          |
+| S00010      | Student_10    | CS          | 40          |
+| S00306      | Student_306   | SE          | 40          |
+| S00010      | Student_10    | CS          | 40          |
+| S00916      | Student_916   | SE          | 40          |
+| S00911      | Student_911   | DS          | 40          |
+| S00910      | Student_910   | CS          | 40          |
+| S00531      | Student_531   | SE          | 40          |
+| S00763      | Student_763   | DS          | 40          |
+| S00870      | Student_870   | SE          | 40          |
+| S00745      | Student_745   | DS          | 40          |
+| S00553      | Student_553   | CS          | 40          |
+| S00531      | Student_531   | SE          | 40          |
+| S00553      | Student_553   | CS          | 40          |
+| S00566      | Student_566   | CS          | 40          |
+| S00566      | Student_566   | CS          | 40          |
+| S00576      | Student_576   | AI          | 40          |
+| S00599      | Student_599   | SE          | 40          |
+| S00141      | Student_141   | IT          | 40          |
+| S00576      | Student_576   | AI          | 40          |
+| S00606      | Student_606   | AI          | 41          |
+| S00447      | Student_447   | AI          | 41          |
+| S00881      | Student_881   | CS          | 41          |
+| S00945      | Student_945   | SE          | 41          |
+| S00461      | Student_461   | CS          | 41          |
+| S00409      | Student_409   | DS          | 41          |
+| S00881      | Student_881   | CS          | 41          |
+| S00606      | Student_606   | AI          | 41          |
+| S00496      | Student_496   | CS          | 41          |
+| S00727      | Student_727   | SE          | 41          |
+| S00409      | Student_409   | DS          | 41          |
+| S00131      | Student_131   | AI          | 41          |
+| S00447      | Student_447   | AI          | 41          |
+| S00961      | Student_961   | AI          | 41          |
+| S00986      | Student_986   | SE          | 41          |
+| S00978      | Student_978   | DS          | 41          |
+| S00986      | Student_986   | SE          | 41          |
+| S00727      | Student_727   | SE          | 41          |
+| S00978      | Student_978   | DS          | 41          |
+| S00945      | Student_945   | SE          | 41          |
+| S00496      | Student_496   | CS          | 41          |
+| S00131      | Student_131   | AI          | 41          |
+| S00461      | Student_461   | CS          | 41          |
+| S00961      | Student_961   | AI          | 41          |
+| S00203      | Student_203   | IT          | 42          |
+| S00338      | Student_338   | DS          | 42          |
+| S00942      | Student_942   | CS          | 42          |
+| S00714      | Student_714   | DS          | 42          |
+| S00017      | Student_17    | IT          | 42          |
+| S00017      | Student_17    | IT          | 42          |
+| S00836      | Student_836   | CS          | 42          |
+| S00955      | Student_955   | DS          | 42          |
+| S00836      | Student_836   | CS          | 42          |
+| S00746      | Student_746   | SE          | 42          |
+| S00149      | Student_149   | DS          | 42          |
+| S00955      | Student_955   | DS          | 42          |
+| S00604      | Student_604   | SE          | 42          |
+| S00203      | Student_203   | IT          | 42          |
+| S00666      | Student_666   | IT          | 42          |
+| S00609      | Student_609   | CS          | 42          |
+| S00338      | Student_338   | DS          | 42          |
+| S00942      | Student_942   | CS          | 42          |
+| S00635      | Student_635   | AI          | 42          |
+| S00372      | Student_372   | SE          | 42          |
+| S00746      | Student_746   | SE          | 42          |
+| S00604      | Student_604   | SE          | 42          |
+| S00666      | Student_666   | IT          | 42          |
+| S00635      | Student_635   | AI          | 42          |
+| S00609      | Student_609   | CS          | 42          |
+| S00743      | Student_743   | IT          | 42          |
+| S00743      | Student_743   | IT          | 42          |
+| S00714      | Student_714   | DS          | 42          |
+| S00198      | Student_198   | IT          | 42          |
+| S00372      | Student_372   | SE          | 42          |
+| S00137      | Student_137   | IT          | 42          |
+| S00448      | Student_448   | SE          | 42          |
+| S00772      | Student_772   | CS          | 42          |
+| S00149      | Student_149   | DS          | 42          |
++-------------+---------------+-------------+-------------+
+| student_id  |     name      | department  | attendance  |
++-------------+---------------+-------------+-------------+
+| S00898      | Student_898   | IT          | 42          |
+| S00137      | Student_137   | IT          | 42          |
+| S00898      | Student_898   | IT          | 42          |
+| S00448      | Student_448   | SE          | 42          |
+| S00772      | Student_772   | CS          | 42          |
+| S00198      | Student_198   | IT          | 42          |
+| S00239      | Student_239   | DS          | 43          |
+| S00300      | Student_300   | SE          | 43          |
+| S00319      | Student_319   | SE          | 43          |
+| S00089      | Student_89    | DS          | 43          |
+| S00125      | Student_125   | CS          | 43          |
+| S00924      | Student_924   | IT          | 43          |
+| S00887      | Student_887   | AI          | 43          |
+| S00875      | Student_875   | CS          | 43          |
+| S00858      | Student_858   | CS          | 43          |
+| S00221      | Student_221   | CS          | 43          |
+| S00239      | Student_239   | DS          | 43          |
+| S00300      | Student_300   | SE          | 43          |
+| S00319      | Student_319   | SE          | 43          |
+| S00818      | Student_818   | SE          | 43          |
+| S00387      | Student_387   | IT          | 43          |
+| S00757      | Student_757   | SE          | 43          |
+| S00474      | Student_474   | IT          | 43          |
+| S00601      | Student_601   | IT          | 43          |
+| S00688      | Student_688   | IT          | 43          |
+| S00669      | Student_669   | SE          | 43          |
+| S00669      | Student_669   | SE          | 43          |
+| S00688      | Student_688   | IT          | 43          |
+| S00601      | Student_601   | IT          | 43          |
+| S00757      | Student_757   | SE          | 43          |
+| S00818      | Student_818   | SE          | 43          |
+| S00858      | Student_858   | CS          | 43          |
+| S00875      | Student_875   | CS          | 43          |
+| S00887      | Student_887   | AI          | 43          |
+| S00924      | Student_924   | IT          | 43          |
+| S00065      | Student_65    | AI          | 43          |
+| S00474      | Student_474   | IT          | 43          |
+| S00089      | Student_89    | DS          | 43          |
+| S00065      | Student_65    | AI          | 43          |
+| S00125      | Student_125   | CS          | 43          |
+| S00387      | Student_387   | IT          | 43          |
+| S00221      | Student_221   | CS          | 43          |
+| S00080      | Student_80    | IT          | 44          |
+| S00468      | Student_468   | CS          | 44          |
+| S00087      | Student_87    | DS          | 44          |
+| S00492      | Student_492   | CS          | 44          |
+| S00165      | Student_165   | DS          | 44          |
+| S00107      | Student_107   | SE          | 44          |
+| S00171      | Student_171   | IT          | 44          |
+| S00165      | Student_165   | DS          | 44          |
+| S00443      | Student_443   | SE          | 44          |
+| S00435      | Student_435   | IT          | 44          |
+| S00433      | Student_433   | IT          | 44          |
+| S00354      | Student_354   | AI          | 44          |
+| S00128      | Student_128   | AI          | 44          |
+| S00908      | Student_908   | IT          | 44          |
+| S00443      | Student_443   | SE          | 44          |
+| S00435      | Student_435   | IT          | 44          |
+| S00908      | Student_908   | IT          | 44          |
+| S00128      | Student_128   | AI          | 44          |
+| S00107      | Student_107   | SE          | 44          |
+| S00087      | Student_87    | DS          | 44          |
+| S00433      | Student_433   | IT          | 44          |
+| S00611      | Student_611   | IT          | 44          |
+| S00821      | Student_821   | IT          | 44          |
+| S00670      | Student_670   | AI          | 44          |
+| S00754      | Student_754   | AI          | 44          |
+| S00654      | Student_654   | SE          | 44          |
+| S00654      | Student_654   | SE          | 44          |
+| S00080      | Student_80    | IT          | 44          |
+| S00354      | Student_354   | AI          | 44          |
+| S00611      | Student_611   | IT          | 44          |
+| S00754      | Student_754   | AI          | 44          |
+| S00171      | Student_171   | IT          | 44          |
+| S00049      | Student_49    | CS          | 44          |
+| S00821      | Student_821   | IT          | 44          |
+| S00826      | Student_826   | CS          | 44          |
+| S00560      | Student_560   | CS          | 44          |
+| S00826      | Student_826   | CS          | 44          |
+| S00492      | Student_492   | CS          | 44          |
+| S00560      | Student_560   | CS          | 44          |
+| S00288      | Student_288   | AI          | 44          |
+| S00228      | Student_228   | DS          | 44          |
+| S00228      | Student_228   | DS          | 44          |
+| S00049      | Student_49    | CS          | 44          |
+| S00288      | Student_288   | AI          | 44          |
+| S00218      | Student_218   | CS          | 44          |
+| S00218      | Student_218   | CS          | 44          |
+| S00670      | Student_670   | AI          | 44          |
+| S00468      | Student_468   | CS          | 44          |
+| S00761      | Student_761   | IT          | 45          |
+| S00762      | Student_762   | SE          | 45          |
+| S00677      | Student_677   | SE          | 45          |
+| S00595      | Student_595   | AI          | 45          |
+| S00805      | Student_805   | IT          | 45          |
+| S00155      | Student_155   | SE          | 45          |
+| S00834      | Student_834   | SE          | 45          |
+| S00512      | Student_512   | SE          | 45          |
+| S00867      | Student_867   | IT          | 45          |
+| S00761      | Student_761   | IT          | 45          |
++-------------+---------------+-------------+-------------+
+| student_id  |     name      | department  | attendance  |
++-------------+---------------+-------------+-------------+
+| S00304      | Student_304   | IT          | 45          |
+| S00762      | Student_762   | SE          | 45          |
+| S00471      | Student_471   | AI          | 45          |
+| S00900      | Student_900   | CS          | 45          |
+| S00902      | Student_902   | SE          | 45          |
+| S00302      | Student_302   | IT          | 45          |
+| S00512      | Student_512   | SE          | 45          |
+| S00805      | Student_805   | IT          | 45          |
+| S00304      | Student_304   | IT          | 45          |
+| S00834      | Student_834   | SE          | 45          |
+| S00302      | Student_302   | IT          | 45          |
+| S00471      | Student_471   | AI          | 45          |
+| S00867      | Student_867   | IT          | 45          |
+| S00623      | Student_623   | DS          | 45          |
+| S00225      | Student_225   | IT          | 45          |
+| S00155      | Student_155   | SE          | 45          |
+| S00900      | Student_900   | CS          | 45          |
+| S00902      | Student_902   | SE          | 45          |
+| S00623      | Student_623   | DS          | 45          |
+| S00677      | Student_677   | SE          | 45          |
+| S00645      | Student_645   | SE          | 45          |
+| S00645      | Student_645   | SE          | 45          |
+| S00595      | Student_595   | AI          | 45          |
+| S00225      | Student_225   | IT          | 45          |
+| S01000      | Student_1000  | DS          | 46          |
+| S00950      | Student_950   | DS          | 46          |
+| S00938      | Student_938   | CS          | 46          |
+| S00929      | Student_929   | SE          | 46          |
+| S00658      | Student_658   | DS          | 46          |
+| S00594      | Student_594   | CS          | 46          |
+| S00537      | Student_537   | SE          | 46          |
+| S00452      | Student_452   | IT          | 46          |
+| S00245      | Student_245   | DS          | 46          |
+| S00162      | Student_162   | SE          | 46          |
+| S00109      | Student_109   | SE          | 46          |
+| S01000      | Student_1000  | DS          | 46          |
+| S00950      | Student_950   | DS          | 46          |
+| S00938      | Student_938   | CS          | 46          |
+| S00929      | Student_929   | SE          | 46          |
+| S00658      | Student_658   | DS          | 46          |
+| S00594      | Student_594   | CS          | 46          |
+| S00537      | Student_537   | SE          | 46          |
+| S00452      | Student_452   | IT          | 46          |
+| S00245      | Student_245   | DS          | 46          |
+| S00162      | Student_162   | SE          | 46          |
+| S00109      | Student_109   | SE          | 46          |
+| S00663      | Student_663   | CS          | 47          |
+| S00379      | Student_379   | AI          | 47          |
+| S00539      | Student_539   | SE          | 47          |
+| S00003      | Student_3     | AI          | 47          |
+| S00047      | Student_47    | CS          | 47          |
+| S00379      | Student_379   | AI          | 47          |
+| S00768      | Student_768   | DS          | 47          |
+| S00524      | Student_524   | IT          | 47          |
+| S00081      | Student_81    | SE          | 47          |
+| S00577      | Student_577   | CS          | 47          |
+| S00768      | Student_768   | DS          | 47          |
+| S00628      | Student_628   | SE          | 47          |
+| S00519      | Student_519   | DS          | 47          |
+| S00663      | Student_663   | CS          | 47          |
+| S00830      | Student_830   | CS          | 47          |
+| S00539      | Student_539   | SE          | 47          |
+| S00572      | Student_572   | IT          | 47          |
+| S00572      | Student_572   | IT          | 47          |
+| S00519      | Student_519   | DS          | 47          |
+| S00330      | Student_330   | AI          | 47          |
+| S00081      | Student_81    | SE          | 47          |
+| S00295      | Student_295   | IT          | 47          |
+| S00524      | Student_524   | IT          | 47          |
+| S00295      | Student_295   | IT          | 47          |
+| S00814      | Student_814   | CS          | 47          |
+| S00830      | Student_830   | CS          | 47          |
+| S00047      | Student_47    | CS          | 47          |
+| S00316      | Student_316   | AI          | 47          |
+| S00628      | Student_628   | SE          | 47          |
+| S00003      | Student_3     | AI          | 47          |
+| S00316      | Student_316   | AI          | 47          |
+| S00330      | Student_330   | AI          | 47          |
+| S00814      | Student_814   | CS          | 47          |
+| S00580      | Student_580   | SE          | 47          |
+| S00580      | Student_580   | SE          | 47          |
+| S00577      | Student_577   | CS          | 47          |
+| S00011      | Student_11    | SE          | 48          |
+| S00401      | Student_401   | DS          | 48          |
+| S00114      | Student_114   | SE          | 48          |
+| S00096      | Student_96    | CS          | 48          |
+| S00588      | Student_588   | CS          | 48          |
+| S00776      | Student_776   | DS          | 48          |
+| S00123      | Student_123   | IT          | 48          |
+| S00931      | Student_931   | DS          | 48          |
+| S00027      | Student_27    | AI          | 48          |
+| S00909      | Student_909   | IT          | 48          |
+| S00481      | Student_481   | AI          | 48          |
+| S00061      | Student_61    | SE          | 48          |
+| S00481      | Student_481   | AI          | 48          |
+| S00538      | Student_538   | IT          | 48          |
+| S00185      | Student_185   | DS          | 48          |
+| S00705      | Student_705   | SE          | 48          |
+| S00029      | Student_29    | AI          | 48          |
+| S00027      | Student_27    | AI          | 48          |
++-------------+---------------+-------------+-------------+
+| student_id  |     name      | department  | attendance  |
++-------------+---------------+-------------+-------------+
+| S00588      | Student_588   | CS          | 48          |
+| S00011      | Student_11    | SE          | 48          |
+| S00909      | Student_909   | IT          | 48          |
+| S00029      | Student_29    | AI          | 48          |
+| S00538      | Student_538   | IT          | 48          |
+| S00617      | Student_617   | CS          | 48          |
+| S00061      | Student_61    | SE          | 48          |
+| S00705      | Student_705   | SE          | 48          |
+| S00185      | Student_185   | DS          | 48          |
+| S00776      | Student_776   | DS          | 48          |
+| S00990      | Student_990   | AI          | 48          |
+| S00401      | Student_401   | DS          | 48          |
+| S00307      | Student_307   | AI          | 48          |
+| S00931      | Student_931   | DS          | 48          |
+| S00307      | Student_307   | AI          | 48          |
+| S00617      | Student_617   | CS          | 48          |
+| S00123      | Student_123   | IT          | 48          |
+| S00096      | Student_96    | CS          | 48          |
+| S00114      | Student_114   | SE          | 48          |
+| S00990      | Student_990   | AI          | 48          |
+| S00891      | Student_891   | DS          | 49          |
+| S00889      | Student_889   | SE          | 49          |
+| S00243      | Student_243   | IT          | 49          |
+| S00837      | Student_837   | DS          | 49          |
+| S00352      | Student_352   | DS          | 49          |
+| S00073      | Student_73    | SE          | 49          |
+| S00076      | Student_76    | DS          | 49          |
+| S00956      | Student_956   | SE          | 49          |
+| S00084      | Student_84    | SE          | 49          |
+| S00953      | Student_953   | DS          | 49          |
+| S00118      | Student_118   | DS          | 49          |
+| S00142      | Student_142   | DS          | 49          |
+| S00190      | Student_190   | AI          | 49          |
+| S00148      | Student_148   | CS          | 49          |
+| S00150      | Student_150   | CS          | 49          |
+| S00891      | Student_891   | DS          | 49          |
+| S00889      | Student_889   | SE          | 49          |
+| S00190      | Student_190   | AI          | 49          |
+| S00150      | Student_150   | CS          | 49          |
+| S00148      | Student_148   | CS          | 49          |
+| S00243      | Student_243   | IT          | 49          |
+| S00004      | Student_4     | AI          | 49          |
+| S00142      | Student_142   | DS          | 49          |
+| S00404      | Student_404   | CS          | 49          |
+| S00837      | Student_837   | DS          | 49          |
+| S00352      | Student_352   | DS          | 49          |
+| S00118      | Student_118   | DS          | 49          |
+| S00404      | Student_404   | CS          | 49          |
+| S00458      | Student_458   | DS          | 49          |
+| S00084      | Student_84    | SE          | 49          |
+| S00458      | Student_458   | DS          | 49          |
+| S00076      | Student_76    | DS          | 49          |
+| S00073      | Student_73    | SE          | 49          |
+| S00482      | Student_482   | SE          | 49          |
+| S00482      | Student_482   | SE          | 49          |
+| S00485      | Student_485   | AI          | 49          |
+| S00748      | Student_748   | IT          | 49          |
+| S00485      | Student_485   | AI          | 49          |
+| S00004      | Student_4     | AI          | 49          |
+| S00956      | Student_956   | SE          | 49          |
+| S00953      | Student_953   | DS          | 49          |
+| S00748      | Student_748   | IT          | 49          |
+| S00973      | Student_973   | SE          | 50          |
+| S00463      | Student_463   | SE          | 50          |
+| S00072      | Student_72    | IT          | 50          |
+| S00866      | Student_866   | IT          | 50          |
+| S00281      | Student_281   | CS          | 50          |
+| S00778      | Student_778   | IT          | 50          |
+| S00463      | Student_463   | SE          | 50          |
+| S00778      | Student_778   | IT          | 50          |
+| S00106      | Student_106   | AI          | 50          |
+| S00359      | Student_359   | SE          | 50          |
+| S00323      | Student_323   | IT          | 50          |
+| S00321      | Student_321   | AI          | 50          |
+| S00281      | Student_281   | CS          | 50          |
+| S00848      | Student_848   | AI          | 50          |
+| S00866      | Student_866   | IT          | 50          |
+| S00321      | Student_321   | AI          | 50          |
+| S00167      | Student_167   | AI          | 50          |
+| S00167      | Student_167   | AI          | 50          |
+| S00981      | Student_981   | SE          | 50          |
+| S00323      | Student_323   | IT          | 50          |
+| S00904      | Student_904   | IT          | 50          |
+| S00106      | Student_106   | AI          | 50          |
+| S00359      | Student_359   | SE          | 50          |
+| S00072      | Student_72    | IT          | 50          |
+| S00848      | Student_848   | AI          | 50          |
+| S00973      | Student_973   | SE          | 50          |
+| S00904      | Student_904   | IT          | 50          |
+| S00489      | Student_489   | DS          | 50          |
+| S00981      | Student_981   | SE          | 50          |
+| S00489      | Student_489   | DS          | 50          |
+| S00285      | Student_285   | SE          | 51          |
+| S00256      | Student_256   | AI          | 51          |
+| S00347      | Student_347   | IT          | 51          |
+| S00220      | Student_220   | CS          | 51          |
+| S00172      | Student_172   | SE          | 51          |
+| S00160      | Student_160   | CS          | 51          |
+| S00403      | Student_403   | CS          | 51          |
+| S00002      | Student_2     | AI          | 51          |
++-------------+---------------+-------------+-------------+
+| student_id  |     name      | department  | attendance  |
++-------------+---------------+-------------+-------------+
+| S00499      | Student_499   | DS          | 51          |
+| S00515      | Student_515   | DS          | 51          |
+| S00530      | Student_530   | DS          | 51          |
+| S00884      | Student_884   | SE          | 51          |
+| S00883      | Student_883   | DS          | 51          |
+| S00541      | Student_541   | SE          | 51          |
+| S00546      | Student_546   | SE          | 51          |
+| S00750      | Student_750   | AI          | 51          |
+| S00692      | Student_692   | IT          | 51          |
+| S00282      | Student_282   | AI          | 51          |
+| S00692      | Student_692   | IT          | 51          |
+| S00546      | Student_546   | SE          | 51          |
+| S00541      | Student_541   | SE          | 51          |
+| S00530      | Student_530   | DS          | 51          |
+| S00515      | Student_515   | DS          | 51          |
+| S00499      | Student_499   | DS          | 51          |
+| S00750      | Student_750   | AI          | 51          |
+| S00403      | Student_403   | CS          | 51          |
+| S00347      | Student_347   | IT          | 51          |
+| S00292      | Student_292   | SE          | 51          |
+| S00286      | Student_286   | DS          | 51          |
+| S00285      | Student_285   | SE          | 51          |
+| S00282      | Student_282   | AI          | 51          |
+| S00256      | Student_256   | AI          | 51          |
+| S00220      | Student_220   | CS          | 51          |
+| S00883      | Student_883   | DS          | 51          |
+| S00884      | Student_884   | SE          | 51          |
+| S00172      | Student_172   | SE          | 51          |
+| S00160      | Student_160   | CS          | 51          |
+| S00002      | Student_2     | AI          | 51          |
+| S00292      | Student_292   | SE          | 51          |
+| S00286      | Student_286   | DS          | 51          |
+| S00559      | Student_559   | IT          | 52          |
+| S00933      | Student_933   | CS          | 52          |
+| S00416      | Student_416   | IT          | 52          |
+| S00181      | Student_181   | CS          | 52          |
+| S00708      | Student_708   | IT          | 52          |
+| S00797      | Student_797   | AI          | 52          |
+| S00933      | Student_933   | CS          | 52          |
+| S00610      | Student_610   | IT          | 52          |
+| S00189      | Student_189   | SE          | 52          |
+| S00832      | Student_832   | AI          | 52          |
+| S00146      | Student_146   | AI          | 52          |
+| S00930      | Student_930   | DS          | 52          |
+| S00610      | Student_610   | IT          | 52          |
+| S00477      | Student_477   | IT          | 52          |
+| S00765      | Student_765   | SE          | 52          |
+| S00477      | Student_477   | IT          | 52          |
+| S00415      | Student_415   | DS          | 52          |
+| S00483      | Student_483   | CS          | 52          |
+| S00416      | Student_416   | IT          | 52          |
+| S00720      | Student_720   | CS          | 52          |
+| S00708      | Student_708   | IT          | 52          |
+| S00559      | Student_559   | IT          | 52          |
+| S00483      | Student_483   | CS          | 52          |
+| S00146      | Student_146   | AI          | 52          |
+| S00797      | Student_797   | AI          | 52          |
+| S00832      | Student_832   | AI          | 52          |
+| S00842      | Student_842   | IT          | 52          |
+| S00415      | Student_415   | DS          | 52          |
+| S00786      | Student_786   | CS          | 52          |
+| S00632      | Student_632   | AI          | 52          |
+| S00839      | Student_839   | CS          | 52          |
+| S00786      | Student_786   | CS          | 52          |
+| S00189      | Student_189   | SE          | 52          |
+| S00930      | Student_930   | DS          | 52          |
+| S00839      | Student_839   | CS          | 52          |
+| S00454      | Student_454   | CS          | 52          |
+| S00529      | Student_529   | DS          | 52          |
+| S00181      | Student_181   | CS          | 52          |
+| S00842      | Student_842   | IT          | 52          |
+| S00888      | Student_888   | SE          | 52          |
+| S00529      | Student_529   | DS          | 52          |
+| S00765      | Student_765   | SE          | 52          |
+| S00888      | Student_888   | SE          | 52          |
+| S00454      | Student_454   | CS          | 52          |
+| S00720      | Student_720   | CS          | 52          |
+| S00632      | Student_632   | AI          | 52          |
+| S00494      | Student_494   | DS          | 53          |
+| S00420      | Student_420   | CS          | 53          |
+| S00823      | Student_823   | CS          | 53          |
+| S00823      | Student_823   | CS          | 53          |
+| S00691      | Student_691   | IT          | 53          |
+| S00549      | Student_549   | DS          | 53          |
+| S00675      | Student_675   | CS          | 53          |
+| S00639      | Student_639   | DS          | 53          |
+| S00661      | Student_661   | IT          | 53          |
+| S00639      | Student_639   | DS          | 53          |
+| S00661      | Student_661   | IT          | 53          |
+| S00675      | Student_675   | CS          | 53          |
+| S00691      | Student_691   | IT          | 53          |
+| S00516      | Student_516   | AI          | 53          |
+| S00590      | Student_590   | IT          | 53          |
+| S00590      | Student_590   | IT          | 53          |
+| S00549      | Student_549   | DS          | 53          |
+| S00516      | Student_516   | AI          | 53          |
+| S00494      | Student_494   | DS          | 53          |
+| S00260      | Student_260   | SE          | 53          |
+| S00420      | Student_420   | CS          | 53          |
+| S00260      | Student_260   | SE          | 53          |
++-------------+---------------+-------------+-------------+
+| student_id  |     name      | department  | attendance  |
++-------------+---------------+-------------+-------------+
+| S00279      | Student_279   | DS          | 54          |
+| S00540      | Student_540   | IT          | 54          |
+| S00213      | Student_213   | SE          | 54          |
+| S00313      | Student_313   | CS          | 54          |
+| S00309      | Student_309   | AI          | 54          |
+| S00219      | Student_219   | SE          | 54          |
+| S00934      | Student_934   | CS          | 54          |
+| S00841      | Student_841   | CS          | 54          |
+| S00119      | Student_119   | AI          | 54          |
+| S00736      | Student_736   | CS          | 54          |
+| S00450      | Student_450   | DS          | 54          |
+| S00279      | Student_279   | DS          | 54          |
+| S00088      | Student_88    | CS          | 54          |
+| S00660      | Student_660   | DS          | 54          |
+| S00309      | Student_309   | AI          | 54          |
+| S00664      | Student_664   | AI          | 54          |
+| S00313      | Student_313   | CS          | 54          |
+| S00522      | Student_522   | IT          | 54          |
+| S00934      | Student_934   | CS          | 54          |
+| S00554      | Student_554   | DS          | 54          |
+| S00660      | Student_660   | DS          | 54          |
+| S00522      | Student_522   | IT          | 54          |
+| S00702      | Student_702   | CS          | 54          |
+| S00209      | Student_209   | IT          | 54          |
+| S00450      | Student_450   | DS          | 54          |
+| S00119      | Student_119   | AI          | 54          |
+| S00664      | Student_664   | AI          | 54          |
+| S00736      | Student_736   | CS          | 54          |
+| S00640      | Student_640   | SE          | 54          |
+| S00213      | Student_213   | SE          | 54          |
+| S00841      | Student_841   | CS          | 54          |
+| S00219      | Student_219   | SE          | 54          |
+| S00850      | Student_850   | CS          | 54          |
+| S00209      | Student_209   | IT          | 54          |
+| S00554      | Student_554   | DS          | 54          |
+| S00850      | Student_850   | CS          | 54          |
+| S00702      | Student_702   | CS          | 54          |
+| S00640      | Student_640   | SE          | 54          |
+| S00088      | Student_88    | CS          | 54          |
+| S00540      | Student_540   | IT          | 54          |
+| S00102      | Student_102   | AI          | 55          |
+| S00793      | Student_793   | CS          | 55          |
+| S00982      | Student_982   | SE          | 55          |
+| S00906      | Student_906   | IT          | 55          |
+| S00180      | Student_180   | AI          | 55          |
+| S00157      | Student_157   | DS          | 55          |
+| S00180      | Student_180   | AI          | 55          |
+| S00196      | Student_196   | SE          | 55          |
+| S00102      | Student_102   | AI          | 55          |
+| S00042      | Student_42    | CS          | 55          |
+| S00157      | Student_157   | DS          | 55          |
+| S00251      | Student_251   | SE          | 55          |
+| S00793      | Student_793   | CS          | 55          |
+| S00126      | Student_126   | SE          | 55          |
+| S00042      | Student_42    | CS          | 55          |
+| S00249      | Student_249   | SE          | 55          |
+| S00249      | Student_249   | SE          | 55          |
+| S00251      | Student_251   | SE          | 55          |
+| S00794      | Student_794   | IT          | 55          |
+| S00419      | Student_419   | IT          | 55          |
+| S00799      | Student_799   | SE          | 55          |
+| S00982      | Student_982   | SE          | 55          |
+| S00794      | Student_794   | IT          | 55          |
+| S00419      | Student_419   | IT          | 55          |
+| S00126      | Student_126   | SE          | 55          |
+| S00196      | Student_196   | SE          | 55          |
+| S00799      | Student_799   | SE          | 55          |
+| S00906      | Student_906   | IT          | 55          |
+| S00574      | Student_574   | SE          | 56          |
+| S00912      | Student_912   | SE          | 56          |
+| S00596      | Student_596   | DS          | 56          |
+| S00596      | Student_596   | DS          | 56          |
+| S00511      | Student_511   | SE          | 56          |
+| S00967      | Student_967   | CS          | 56          |
+| S00574      | Student_574   | SE          | 56          |
+| S00967      | Student_967   | CS          | 56          |
+| S00997      | Student_997   | SE          | 56          |
+| S00997      | Student_997   | SE          | 56          |
+| S00511      | Student_511   | SE          | 56          |
+| S00041      | Student_41    | SE          | 56          |
+| S00771      | Student_771   | AI          | 56          |
+| S00082      | Student_82    | SE          | 56          |
+| S00383      | Student_383   | IT          | 56          |
+| S00380      | Student_380   | DS          | 56          |
+| S00375      | Student_375   | IT          | 56          |
+| S00771      | Student_771   | AI          | 56          |
+| S00122      | Student_122   | IT          | 56          |
+| S00273      | Student_273   | AI          | 56          |
+| S00383      | Student_383   | IT          | 56          |
+| S00849      | Student_849   | IT          | 56          |
+| S00273      | Student_273   | AI          | 56          |
+| S00194      | Student_194   | CS          | 56          |
+| S00041      | Student_41    | SE          | 56          |
+| S00179      | Student_179   | DS          | 56          |
+| S00380      | Student_380   | DS          | 56          |
+| S00179      | Student_179   | DS          | 56          |
+| S00194      | Student_194   | CS          | 56          |
+| S00912      | Student_912   | SE          | 56          |
+| S00375      | Student_375   | IT          | 56          |
+| S00122      | Student_122   | IT          | 56          |
++-------------+---------------+-------------+-------------+
+| student_id  |     name      | department  | attendance  |
++-------------+---------------+-------------+-------------+
+| S00082      | Student_82    | SE          | 56          |
+| S00849      | Student_849   | IT          | 56          |
+| S00261      | Student_261   | IT          | 57          |
+| S00278      | Student_278   | IT          | 57          |
+| S00713      | Student_713   | IT          | 57          |
+| S00261      | Student_261   | IT          | 57          |
+| S00007      | Student_7     | AI          | 57          |
+| S00071      | Student_71    | AI          | 57          |
+| S00143      | Student_143   | DS          | 57          |
+| S00490      | Student_490   | CS          | 57          |
+| S00749      | Student_749   | DS          | 57          |
+| S00847      | Student_847   | IT          | 57          |
+| S00564      | Student_564   | SE          | 57          |
+| S00514      | Student_514   | SE          | 57          |
+| S00278      | Student_278   | IT          | 57          |
+| S00200      | Student_200   | DS          | 57          |
+| S00333      | Student_333   | IT          | 57          |
+| S00015      | Student_15    | DS          | 57          |
+| S00613      | Student_613   | CS          | 57          |
+| S00007      | Student_7     | AI          | 57          |
+| S00163      | Student_163   | SE          | 57          |
+| S00730      | Student_730   | SE          | 57          |
+| S00730      | Student_730   | SE          | 57          |
+| S00178      | Student_178   | DS          | 57          |
+| S00490      | Student_490   | CS          | 57          |
+| S00163      | Student_163   | SE          | 57          |
+| S00178      | Student_178   | DS          | 57          |
+| S00071      | Student_71    | AI          | 57          |
+| S00713      | Student_713   | IT          | 57          |
+| S00564      | Student_564   | SE          | 57          |
+| S00143      | Student_143   | DS          | 57          |
+| S00781      | Student_781   | DS          | 57          |
+| S00350      | Student_350   | DS          | 57          |
+| S00749      | Student_749   | DS          | 57          |
+| S00200      | Student_200   | DS          | 57          |
+| S00105      | Student_105   | IT          | 57          |
+| S00613      | Student_613   | CS          | 57          |
+| S00662      | Student_662   | IT          | 57          |
+| S00357      | Student_357   | IT          | 57          |
+| S00361      | Student_361   | SE          | 57          |
+| S00847      | Student_847   | IT          | 57          |
+| S00015      | Student_15    | DS          | 57          |
+| S00662      | Student_662   | IT          | 57          |
+| S00514      | Student_514   | SE          | 57          |
+| S00333      | Student_333   | IT          | 57          |
+| S00350      | Student_350   | DS          | 57          |
+| S00357      | Student_357   | IT          | 57          |
+| S00361      | Student_361   | SE          | 57          |
+| S00105      | Student_105   | IT          | 57          |
+| S00781      | Student_781   | DS          | 57          |
+| S00317      | Student_317   | CS          | 58          |
+| S00561      | Student_561   | SE          | 58          |
+| S00374      | Student_374   | DS          | 58          |
+| S00505      | Student_505   | CS          | 58          |
+| S00629      | Student_629   | IT          | 58          |
+| S00918      | Student_918   | AI          | 58          |
+| S00918      | Student_918   | AI          | 58          |
+| S00773      | Student_773   | DS          | 58          |
+| S00922      | Student_922   | DS          | 58          |
+| S00263      | Student_263   | IT          | 58          |
+| S00603      | Student_603   | DS          | 58          |
+| S00263      | Student_263   | IT          | 58          |
+| S00054      | Student_54    | SE          | 58          |
+| S00222      | Student_222   | SE          | 58          |
+| S00922      | Student_922   | DS          | 58          |
+| S00561      | Student_561   | SE          | 58          |
+| S00374      | Student_374   | DS          | 58          |
+| S00222      | Student_222   | SE          | 58          |
+| S00542      | Student_542   | SE          | 58          |
+| S00054      | Student_54    | SE          | 58          |
+| S00505      | Student_505   | CS          | 58          |
+| S00317      | Student_317   | CS          | 58          |
+| S00424      | Student_424   | CS          | 58          |
+| S00424      | Student_424   | CS          | 58          |
+| S00655      | Student_655   | SE          | 58          |
+| S00647      | Student_647   | IT          | 58          |
+| S00773      | Student_773   | DS          | 58          |
+| S00647      | Student_647   | IT          | 58          |
+| S00542      | Student_542   | SE          | 58          |
+| S00603      | Student_603   | DS          | 58          |
+| S00655      | Student_655   | SE          | 58          |
+| S00629      | Student_629   | IT          | 58          |
+| S00497      | Student_497   | DS          | 59          |
+| S00019      | Student_19    | CS          | 59          |
+| S00133      | Student_133   | CS          | 59          |
+| S00192      | Student_192   | DS          | 59          |
+| S00497      | Student_497   | DS          | 59          |
+| S00683      | Student_683   | AI          | 59          |
+| S00232      | Student_232   | IT          | 59          |
+| S00919      | Student_919   | IT          | 59          |
+| S00133      | Student_133   | CS          | 59          |
+| S00164      | Student_164   | SE          | 59          |
+| S00346      | Student_346   | IT          | 59          |
+| S00405      | Student_405   | CS          | 59          |
+| S00207      | Student_207   | AI          | 59          |
+| S00600      | Student_600   | SE          | 59          |
+| S00019      | Student_19    | CS          | 59          |
+| S00207      | Student_207   | AI          | 59          |
+| S00224      | Student_224   | DS          | 59          |
+| S00346      | Student_346   | IT          | 59          |
++-------------+---------------+-------------+-------------+
+| student_id  |     name      | department  | attendance  |
++-------------+---------------+-------------+-------------+
+| S00600      | Student_600   | SE          | 59          |
+| S00121      | Student_121   | DS          | 59          |
+| S00683      | Student_683   | AI          | 59          |
+| S00232      | Student_232   | IT          | 59          |
+| S00919      | Student_919   | IT          | 59          |
+| S00192      | Student_192   | DS          | 59          |
+| S00164      | Student_164   | SE          | 59          |
+| S00405      | Student_405   | CS          | 59          |
+| S00224      | Student_224   | DS          | 59          |
+| S00121      | Student_121   | DS          | 59          |
++-------------+---------------+-------------+-------------+
+710 rows selected (3.034 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- 4. Placement Rate by Program ---';
+26/07/13 12:48:24 [59fed901-81b4-44e3-b625-7c8adc49621d main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++---------------------------------------+
+|                  _c0                  |
++---------------------------------------+
+| --- 4. Placement Rate by Program ---  |
++---------------------------------------+
+1 row selected (0.129 seconds)
+0: jdbc:hive2://> SELECT
+. . . . . . . . > program,
+. . . . . . . . > COUNT(*) AS graduates,
+. . . . . . . . > SUM(CASE WHEN placement='Yes' THEN 1 ELSE 0 END) AS placed_students,
+. . . . . . . . > ROUND(
+. . . . . . . . > 100.0 * SUM(CASE WHEN placement='Yes' THEN 1 ELSE 0 END) / COUNT(*),
+. . . . . . . . > 2
+. . . . . . . . > ) AS placement_rate
+. . . . . . . . > FROM student_performance
+. . . . . . . . > GROUP BY program;
+26/07/13 12:48:25 [HiveServer2-Background-Pool: Thread-181]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124824_435e038a-b854-4b29-a7c5-b97a01576b4b
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:48:25 [HiveServer2-Background-Pool: Thread-181]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:25 [HiveServer2-Background-Pool: Thread-181]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:25 [HiveServer2-Background-Pool: Thread-181]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:48:25 [pool-39-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:48:26,708 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.41 sec
+MapReduce Total cumulative CPU time: 410 msec
+Ended Job = job_local1221423490_0007
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.41 sec   HDFS Read: 2208732 HDFS Write: 483937 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 410 msec
++----------+------------+------------------+-----------------+
+| program  | graduates  | placed_students  | placement_rate  |
++----------+------------+------------------+-----------------+
+| BSc      | 1010       | 224              | 22.18           |
+| MSc      | 990        | 280              | 28.28           |
+| Program  | 2          | 0                | 0.00            |
++----------+------------+------------------+-----------------+
+3 rows selected (2.246 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- 5. Ranking Students Within Departments ---';
+26/07/13 12:48:27 [59fed901-81b4-44e3-b625-7c8adc49621d main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++-------------------------------------------------+
+|                       _c0                       |
++-------------------------------------------------+
+| --- 5. Ranking Students Within Departments ---  |
++-------------------------------------------------+
+1 row selected (0.186 seconds)
+0: jdbc:hive2://> SELECT
+. . . . . . . . > student_id,
+. . . . . . . . > name,
+. . . . . . . . > department,
+. . . . . . . . > gpa,
+. . . . . . . . > RANK()
+. . . . . . . . > OVER(
+. . . . . . . . > PARTITION BY department
+. . . . . . . . > ORDER BY gpa DESC
+. . . . . . . . > ) AS department_rank
+. . . . . . . . > FROM student_performance
+. . . . . . . . > LIMIT 50;
+26/07/13 12:48:27 [HiveServer2-Background-Pool: Thread-201]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124827_7c2c4cde-ce9c-43f6-bbea-920cf3b406f0
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:48:27 [HiveServer2-Background-Pool: Thread-201]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:27 [HiveServer2-Background-Pool: Thread-201]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:48:27 [HiveServer2-Background-Pool: Thread-201]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:48:28 [pool-43-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:48:29,306 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 1.27 sec
+MapReduce Total cumulative CPU time: 1 seconds 270 msec
+Ended Job = job_local1361719235_0008
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 1.27 sec   HDFS Read: 2639238 HDFS Write: 486277 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 270 msec
++-------------+--------------+-------------+-------+------------------+
+| student_id  |     name     | department  |  gpa  | department_rank  |
++-------------+--------------+-------------+-------+------------------+
+| S00388      | Student_388  | AI          | 3.57  | 1                |
+| S00388      | Student_388  | AI          | 3.57  | 1                |
+| S00356      | Student_356  | AI          | 3.55  | 3                |
+| S00356      | Student_356  | AI          | 3.55  | 3                |
+| S00353      | Student_353  | AI          | 3.52  | 5                |
+| S00353      | Student_353  | AI          | 3.52  | 5                |
+| S00235      | Student_235  | AI          | 3.48  | 7                |
+| S00235      | Student_235  | AI          | 3.48  | 7                |
+| S00605      | Student_605  | AI          | 3.45  | 9                |
+| S00007      | Student_7    | AI          | 3.45  | 9                |
+| S00007      | Student_7    | AI          | 3.45  | 9                |
+| S00605      | Student_605  | AI          | 3.45  | 9                |
+| S00722      | Student_722  | AI          | 3.43  | 13               |
+| S00722      | Student_722  | AI          | 3.43  | 13               |
+| S00562      | Student_562  | AI          | 3.39  | 15               |
+| S00562      | Student_562  | AI          | 3.39  | 15               |
+| S00508      | Student_508  | AI          | 3.34  | 17               |
+| S00508      | Student_508  | AI          | 3.34  | 17               |
+| S00256      | Student_256  | AI          | 3.31  | 19               |
+| S00256      | Student_256  | AI          | 3.31  | 19               |
+| S00321      | Student_321  | AI          | 3.31  | 19               |
+| S00321      | Student_321  | AI          | 3.31  | 19               |
+| S00204      | Student_204  | AI          | 3.3   | 23               |
+| S00204      | Student_204  | AI          | 3.3   | 23               |
+| S00771      | Student_771  | AI          | 3.29  | 25               |
+| S00771      | Student_771  | AI          | 3.29  | 25               |
+| S00742      | Student_742  | AI          | 3.27  | 27               |
+| S00742      | Student_742  | AI          | 3.27  | 27               |
+| S00887      | Student_887  | AI          | 3.26  | 29               |
+| S00175      | Student_175  | AI          | 3.26  | 29               |
+| S00887      | Student_887  | AI          | 3.26  | 29               |
+| S00175      | Student_175  | AI          | 3.26  | 29               |
+| S00002      | Student_2    | AI          | 3.26  | 29               |
+| S00002      | Student_2    | AI          | 3.26  | 29               |
+| S00868      | Student_868  | AI          | 3.25  | 35               |
+| S00868      | Student_868  | AI          | 3.25  | 35               |
+| S00828      | Student_828  | AI          | 3.23  | 37               |
+| S00828      | Student_828  | AI          | 3.23  | 37               |
+| S00202      | Student_202  | AI          | 3.22  | 39               |
+| S00202      | Student_202  | AI          | 3.22  | 39               |
+| S00139      | Student_139  | AI          | 3.21  | 41               |
+| S00139      | Student_139  | AI          | 3.21  | 41               |
+| S00289      | Student_289  | AI          | 3.2   | 43               |
+| S00289      | Student_289  | AI          | 3.2   | 43               |
+| S00880      | Student_880  | AI          | 3.19  | 45               |
+| S00880      | Student_880  | AI          | 3.19  | 45               |
+| S00693      | Student_693  | AI          | 3.18  | 47               |
+| S00693      | Student_693  | AI          | 3.18  | 47               |
+| S00138      | Student_138  | AI          | 3.16  | 49               |
+| S00138      | Student_138  | AI          | 3.16  | 49               |
++-------------+--------------+-------------+-------+------------------+
+50 rows selected (1.973 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> Closing: 0: jdbc:hive2://
+26/07/13 12:48:29 [shutdown-hook-0]: WARN util.ShutdownHookManager: Shutdown in progress, cannot cancel a deleteOnExit
+26/07/13 12:48:29 [shutdown-hook-0]: WARN util.ShutdownHookManager: Shutdown in progress, cannot cancel a deleteOnExit

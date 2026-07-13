@@ -1,0 +1,1611 @@
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://
+Hive Session ID = b53a4959-ea35-42bb-b73f-08c9c6802903
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.apache.hadoop.hive.common.StringInternUtils (file:/opt/hive/lib/hive-common-4.0.1.jar) to field java.net.URI.string
+WARNING: Please consider reporting this to the maintainers of org.apache.hadoop.hive.common.StringInternUtils
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+26/07/13 12:45:49 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.cpc.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:45:49 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.hll.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:45:49 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.IntersectSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:45:49 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.EstimateSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:45:49 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.ExcludeSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:45:49 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.theta.UnionSketchUDF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:45:49 [main]: WARN exec.FunctionRegistry: UDF Class org.apache.hive.org.apache.datasketches.hive.tuple.ArrayOfDoublesSketchToValuesUDTF does not have description. Please annotate the class with the org.apache.hadoop.hive.ql.exec.Description annotation and provide the description of the function.
+26/07/13 12:45:49 [main]: WARN session.SessionState: Configuration hive.reloadable.aux.jars.path not specified
+Connected to: Apache Hive (version 4.0.1)
+Driver: Hive JDBC (version 4.0.1)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+0: jdbc:hive2://> -- =============================================================================
+0: jdbc:hive2://> -- File   : employee_analysis.hql
+0: jdbc:hive2://> -- Purpose: Full Hadoop/Hive analysis of EmployeeDataset.csv
+0: jdbc:hive2://> -- Tasks  :
+0: jdbc:hive2://> --   1. Upload & create raw staging table
+0: jdbc:hive2://> --   2. Identify and fix five data preprocessing problems
+0: jdbc:hive2://> --   3. Split job_title into first_title_word and remaining_title
+0: jdbc:hive2://> --   4. Count PhDs with < 10 years experience by country
+0: jdbc:hive2://> --   5. Display skills_count in ascending order
+0: jdbc:hive2://> --   6. Calculate Growth Rate of call_log for PhD / Bachelor / High School
+0: jdbc:hive2://> --   7. Predict Future Value of call_log for PhD / Bachelor / High School
+0: jdbc:hive2://> -- =============================================================================
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- Tune memory for local / pseudo-distributed mode
+0: jdbc:hive2://> SET mapreduce.task.io.sort.mb=32;
+No rows affected (0.063 seconds)
+0: jdbc:hive2://> SET hive.exec.mode.local.auto=true;
+No rows affected (0.008 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- SECTION 0 – DROP ALL WORKING TABLES (clean re-run)
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> DROP TABLE IF EXISTS emp_raw;
+No rows affected (3.507 seconds)
+0: jdbc:hive2://> DROP TABLE IF EXISTS emp_no_dup;
+No rows affected (0.032 seconds)
+0: jdbc:hive2://> DROP TABLE IF EXISTS emp_clean;
+No rows affected (0.032 seconds)
+0: jdbc:hive2://> DROP TABLE IF EXISTS emp_split_title;
+No rows affected (0.03 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- SECTION 1 – LOAD RAW DATA FROM HDFS (Staging Table)
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> SELECT '===== SECTION 1: LOAD RAW STAGING TABLE =====' AS section;
+26/07/13 12:45:57 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++------------------------------------------------+
+|                    section                     |
++------------------------------------------------+
+| ===== SECTION 1: LOAD RAW STAGING TABLE =====  |
++------------------------------------------------+
+1 row selected (3.275 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> CREATE TABLE emp_raw (
+. . . . . . . . >     job_id            STRING,
+. . . . . . . . >     job_title         STRING,
+. . . . . . . . >     experience_years  STRING,   -- kept as STRING so NULLs survive load
+. . . . . . . . >     education_level   STRING,
+. . . . . . . . >     skills_count      STRING,
+. . . . . . . . >     industry          STRING,
+. . . . . . . . >     company_size      STRING,
+. . . . . . . . >     location          STRING,
+. . . . . . . . >     remote_work       STRING,
+. . . . . . . . >     call_log          STRING,
+. . . . . . . . >     salary            STRING,
+. . . . . . . . >     date_of_marriage  STRING
+. . . . . . . . > )
+. . . . . . . . > ROW FORMAT DELIMITED
+. . . . . . . . > FIELDS TERMINATED BY ','
+. . . . . . . . > STORED AS TEXTFILE
+. . . . . . . . > TBLPROPERTIES ("skip.header.line.count"="1");
+No rows affected (2.154 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> LOAD DATA INPATH '/data/employee/EmployeeDataset.csv'
+. . . . . . . . > INTO TABLE emp_raw;
+Loading data to table default.emp_raw
+26/07/13 12:46:02 [HiveServer2-Background-Pool: Thread-58]: WARN metadata.Hive: Cannot get a table snapshot for emp_raw
+26/07/13 12:46:02 [HiveServer2-Background-Pool: Thread-58]: WARN metadata.Hive: Cannot get a table snapshot for emp_raw
+No rows affected (1.605 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- Raw row count ---' AS info;
+26/07/13 12:46:02 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++------------------------+
+|          info          |
++------------------------+
+| --- Raw row count ---  |
++------------------------+
+1 row selected (0.122 seconds)
+0: jdbc:hive2://> SELECT COUNT(*) AS total_raw_rows FROM emp_raw;
+26/07/13 12:46:02 [HiveServer2-Background-Pool: Thread-66]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124602_bf168324-cfb7-4c2f-b60f-d8decd34cc10
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:03 [HiveServer2-Background-Pool: Thread-66]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:03 [HiveServer2-Background-Pool: Thread-66]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:46:06 [pool-12-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:06,492 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.12 sec
+2026-07-13 12:46:08,512 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.18 sec
+MapReduce Total cumulative CPU time: 2 seconds 180 msec
+Ended Job = job_local65326399_0001
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 2.18 sec   HDFS Read: 17106 HDFS Write: 103 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 180 msec
++-----------------+
+| total_raw_rows  |
++-----------------+
+| 100             |
++-----------------+
+1 row selected (6.052 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- Preview (first 10 rows) ---' AS info;
+26/07/13 12:46:08 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------+
+|               info               |
++----------------------------------+
+| --- Preview (first 10 rows) ---  |
++----------------------------------+
+1 row selected (0.117 seconds)
+0: jdbc:hive2://> SELECT * FROM emp_raw LIMIT 10;
+26/07/13 12:46:09 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN calcite.RelOptHiveTable: No Stats for default@emp_raw, Columns: skills_count, job_id, experience_years, date_of_marriage, call_log, education_level, industry, location, salary, job_title, company_size, remote_work
+No Stats for default@emp_raw, Columns: skills_count, job_id, experience_years, date_of_marriage, call_log, education_level, industry, location, salary, job_title, company_size, remote_work
+26/07/13 12:46:09 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Table default@emp_raw is external table, falling back to filesystem scan.
++-----------------+----------------------------+---------------------------+--------------------------+-----------------------+-------------------+-----------------------+-------------------+----------------------+-------------------+-----------------+---------------------------+
+| emp_raw.job_id  |     emp_raw.job_title      | emp_raw.experience_years  | emp_raw.education_level  | emp_raw.skills_count  | emp_raw.industry  | emp_raw.company_size  | emp_raw.location  | emp_raw.remote_work  | emp_raw.call_log  | emp_raw.salary  | emp_raw.date_of_marriage  |
++-----------------+----------------------------+---------------------------+--------------------------+-----------------------+-------------------+-----------------------+-------------------+----------------------+-------------------+-----------------+---------------------------+
+| 1005            | AI Engineer                | 10                        | Bachelor                 | 2                     | Healthcare        | Medium                | India             | Hybrid               | 2                 | 109413          | 1/1/2020                  |
+| 1006            | Data Analyst               | 5                         | Bachelor                 | 17                    | Telecom           | Small                 | Australia         | No                   | 4                 | 100             | 10/31/2020                |
+| 1009            | Product Manager            | 15                        | Bachelor                 | 7                     | Manufacturing     | Large                 | Sweden            | Yes                  | 6                 | 165069          | 18/1/2020                 |
+| 1009            | Machine Learning Engineer  | 4                         | Bachelor                 | 18                    | Healthcare        | Enterprise            | Canada            | Hybrid               | 8                 | 202463          | 10/31/2020                |
+| 1007            | Frontend Developer         | 18                        | PhD                      | 4                     | Media             | Medium                | Singapore         | No                   | 5                 | 148123          | 12/12/2020                |
+| 1005            | Business Analyst           |                           | PhD                      | 13                    | Retail            | Medium                | Canada            | Yes                  | 10                | 50              | 29/1/2020                 |
+| 1014            | Frontend Developer         | 18                        | PhD                      | 2                     | Retail            | Enterprise            | India             | Hybrid               | 15                | 128377          | 29/1/2020                 |
+| 1010            | AI Engineer                | 0                         | High School              | 4                     | Education         | Enterprise            | USA               | No                   | 3                 | 102             | 2/28/2020                 |
+| 1006            | Backend Developer          |                           | high School              | 16                    | Manufacturing     | Enterprise            | Canada            | No                   | 5                 | 165375          | 1/1/2020                  |
+| 1015            | Frontend Developer         | 1                         | High School              | 10                    | Healthcare        | Large                 | Netherlands       | Yes                  | 7                 | 105755          | 18/1/2020                 |
++-----------------+----------------------------+---------------------------+--------------------------+-----------------------+-------------------+-----------------------+-------------------+----------------------+-------------------+-----------------+---------------------------+
+10 rows selected (0.36 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- SECTION 2 – DATA PREPROCESSING: IDENTIFY & FIX PROBLEMS
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> SELECT '===== SECTION 2: DATA PREPROCESSING =====' AS section;
+26/07/13 12:46:09 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++--------------------------------------------+
+|                  section                   |
++--------------------------------------------+
+| ===== SECTION 2: DATA PREPROCESSING =====  |
++--------------------------------------------+
+1 row selected (0.123 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> -- PROBLEM 1: MISSING VALUES in experience_years
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> SELECT '--- Problem 1: Missing values in experience_years ---' AS problem;
+26/07/13 12:46:09 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                      problem                       |
++----------------------------------------------------+
+| --- Problem 1: Missing values in experience_years --- |
++----------------------------------------------------+
+1 row selected (0.099 seconds)
+0: jdbc:hive2://> SELECT job_id, job_title, experience_years, education_level
+. . . . . . . . > FROM emp_raw
+. . . . . . . . > WHERE experience_years IS NULL OR TRIM(experience_years) = '';
+26/07/13 12:46:10 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN calcite.RelOptHiveTable: No Stats for default@emp_raw, Columns: job_id, experience_years, education_level, job_title
+No Stats for default@emp_raw, Columns: job_id, experience_years, education_level, job_title
+26/07/13 12:46:10 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Table default@emp_raw is external table, falling back to filesystem scan.
++---------+--------------------+-------------------+------------------+
+| job_id  |     job_title      | experience_years  | education_level  |
++---------+--------------------+-------------------+------------------+
+| 1005    | Business Analyst   |                   | PhD              |
+| 1006    | Backend Developer  |                   | high School      |
++---------+--------------------+-------------------+------------------+
+2 rows selected (0.393 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- Fix: Replace NULLs / empty strings with the median (impute as 0)
+0: jdbc:hive2://> -- We will carry the fix into the cleaned table below.
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> -- PROBLEM 2: DUPLICATE JOB IDs (same job_id used for different roles)
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> SELECT '--- Problem 2: Duplicate job_id values ---' AS problem;
+26/07/13 12:46:10 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++---------------------------------------------+
+|                   problem                   |
++---------------------------------------------+
+| --- Problem 2: Duplicate job_id values ---  |
++---------------------------------------------+
+1 row selected (0.148 seconds)
+0: jdbc:hive2://> SELECT job_id, COUNT(*) AS cnt
+. . . . . . . . > FROM emp_raw
+. . . . . . . . > GROUP BY job_id
+. . . . . . . . > HAVING COUNT(*) > 1
+. . . . . . . . > ORDER BY cnt DESC;
+26/07/13 12:46:11 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN calcite.RelOptHiveTable: No Stats for default@emp_raw, Columns: job_id
+No Stats for default@emp_raw, Columns: job_id
+26/07/13 12:46:11 [HiveServer2-Background-Pool: Thread-104]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124611_f49d1fee-be5a-4cd2-a04f-ba48be981b26
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:11 [HiveServer2-Background-Pool: Thread-104]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:11 [HiveServer2-Background-Pool: Thread-104]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:11 [HiveServer2-Background-Pool: Thread-104]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:46:13 [pool-18-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:13,712 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 1.13 sec
+MapReduce Total cumulative CPU time: 1 seconds 130 msec
+Ended Job = job_local401412867_0002
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:13 [HiveServer2-Background-Pool: Thread-104]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:13 [HiveServer2-Background-Pool: Thread-104]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:13 [HiveServer2-Background-Pool: Thread-104]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:14 [pool-22-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:15,212 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.5 sec
+MapReduce Total cumulative CPU time: 500 msec
+Ended Job = job_local657158125_0003
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 1.13 sec   HDFS Read: 59700 HDFS Write: 206 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.5 sec   HDFS Read: 59700 HDFS Write: 350 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 630 msec
++---------+------+
+| job_id  | cnt  |
++---------+------+
+| 1009    | 2    |
+| 1006    | 2    |
+| 1005    | 2    |
++---------+------+
+3 rows selected (4.101 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> -- PROBLEM 3: INCONSISTENT CASE in education_level
+0: jdbc:hive2://> --            e.g. "high School", "bachelor", "PhD", "Bachelor"
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> SELECT '--- Problem 3: Inconsistent casing in education_level ---' AS problem;
+26/07/13 12:46:15 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                      problem                       |
++----------------------------------------------------+
+| --- Problem 3: Inconsistent casing in education_level --- |
++----------------------------------------------------+
+1 row selected (0.142 seconds)
+0: jdbc:hive2://> SELECT DISTINCT education_level FROM emp_raw ORDER BY education_level;
+26/07/13 12:46:16 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN calcite.RelOptHiveTable: No Stats for default@emp_raw, Columns: education_level
+No Stats for default@emp_raw, Columns: education_level
+26/07/13 12:46:16 [HiveServer2-Background-Pool: Thread-138]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124615_ba548f9b-9538-47e8-abf5-a7ca7def0ec4
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:16 [HiveServer2-Background-Pool: Thread-138]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:16 [HiveServer2-Background-Pool: Thread-138]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:16 [HiveServer2-Background-Pool: Thread-138]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:46:16 [pool-26-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:17,844 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.3 sec
+MapReduce Total cumulative CPU time: 300 msec
+Ended Job = job_local1889898961_0004
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:17 [HiveServer2-Background-Pool: Thread-138]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:17 [HiveServer2-Background-Pool: Thread-138]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:17 [HiveServer2-Background-Pool: Thread-138]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:18 [pool-30-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:19,181 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.46 sec
+MapReduce Total cumulative CPU time: 460 msec
+Ended Job = job_local1716383569_0005
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.3 sec   HDFS Read: 77086 HDFS Write: 494 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.46 sec   HDFS Read: 77086 HDFS Write: 754 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 760 msec
++------------------+
+| education_level  |
++------------------+
+| Bachelor         |
+| Diploma          |
+| High School      |
+| Master           |
+| PhD              |
+| bachelor         |
+| education_level  |
+| high School      |
++------------------+
+8 rows selected (3.523 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> -- PROBLEM 4: INVALID / OUTLIER VALUES in salary
+0: jdbc:hive2://> --            Suspiciously low values (< 1000) suggest data entry errors
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> SELECT '--- Problem 4: Outlier salary values (< 1000) ---' AS problem;
+26/07/13 12:46:19 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                      problem                       |
++----------------------------------------------------+
+| --- Problem 4: Outlier salary values (< 1000) ---  |
++----------------------------------------------------+
+1 row selected (0.099 seconds)
+0: jdbc:hive2://> SELECT job_id, job_title, salary
+. . . . . . . . > FROM emp_raw
+. . . . . . . . > WHERE CAST(salary AS BIGINT) < 1000;
+26/07/13 12:46:19 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN calcite.RelOptHiveTable: No Stats for default@emp_raw, Columns: job_id, salary, job_title
+No Stats for default@emp_raw, Columns: job_id, salary, job_title
+26/07/13 12:46:19 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Table default@emp_raw is external table, falling back to filesystem scan.
++---------+-------------------+---------+
+| job_id  |     job_title     | salary  |
++---------+-------------------+---------+
+| 1006    | Data Analyst      | 100     |
+| 1005    | Business Analyst  | 50      |
+| 1010    | AI Engineer       | 102     |
+| 1013    | AI Engineer       | 99      |
++---------+-------------------+---------+
+4 rows selected (0.206 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> -- PROBLEM 5: INVALID LOCATION ("Remote" mixed with country names)
+0: jdbc:hive2://> --            "Remote" is a work-mode, not a country – normalise it
+0: jdbc:hive2://> -- ------------------------------------------------------------------
+0: jdbc:hive2://> SELECT '--- Problem 5: Location contains work-mode value "Remote" ---' AS problem;
+26/07/13 12:46:20 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                      problem                       |
++----------------------------------------------------+
+| --- Problem 5: Location contains work-mode value "Remote" --- |
++----------------------------------------------------+
+1 row selected (0.115 seconds)
+0: jdbc:hive2://> SELECT job_id, location, remote_work
+. . . . . . . . > FROM emp_raw
+. . . . . . . . > WHERE LOWER(TRIM(location)) = 'remote';
+26/07/13 12:46:20 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN calcite.RelOptHiveTable: No Stats for default@emp_raw, Columns: job_id, location, remote_work
+No Stats for default@emp_raw, Columns: job_id, location, remote_work
+26/07/13 12:46:20 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Table default@emp_raw is external table, falling back to filesystem scan.
++---------+-----------+--------------+
+| job_id  | location  | remote_work  |
++---------+-----------+--------------+
+| 1020    | Remote    | No           |
+| 1031    | Remote    | Yes          |
+| 1053    | Remote    | No           |
+| 1054    | Remote    | Hybrid       |
+| 1057    | Remote    | No           |
+| 1059    | Remote    | Hybrid       |
+| 1069    | Remote    | Hybrid       |
+| 1083    | Remote    | Yes          |
+| 1096    | Remote    | Yes          |
++---------+-----------+--------------+
+9 rows selected (0.293 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- -----------------------------------------------------------------------
+0: jdbc:hive2://> -- BUILD CLEANED TABLE – applies all five fixes simultaneously:
+0: jdbc:hive2://> --   Fix 1: COALESCE experience_years NULL/empty → 0
+0: jdbc:hive2://> --   Fix 2: Use ROW_NUMBER to keep only the first occurrence per job_id
+0: jdbc:hive2://> --   Fix 3: INITCAP on education_level normalises casing
+0: jdbc:hive2://> --   Fix 4: Replace salary < 1000 with NULL (flagged for manual review)
+0: jdbc:hive2://> --   Fix 5: Replace location='Remote' with 'Unknown' and set remote_work='Yes'
+0: jdbc:hive2://> -- -----------------------------------------------------------------------
+0: jdbc:hive2://> SELECT '--- Applying all fixes → emp_clean ---' AS info;
+26/07/13 12:46:21 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++-----------------------------------------+
+|                  info                   |
++-----------------------------------------+
+| --- Applying all fixes ? emp_clean ---  |
++-----------------------------------------+
+1 row selected (0.13 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> CREATE TABLE emp_clean
+. . . . . . . . > STORED AS ORC
+. . . . . . . . > TBLPROPERTIES ("orc.compress"="SNAPPY") AS
+. . . . . . . . > SELECT
+. . . . . . . . >     job_id,
+. . . . . . . . >     job_title,
+. . . . . . . . >     -- Fix 1: impute missing experience_years with 0
+. . . . . . . . >     CAST(COALESCE(NULLIF(TRIM(experience_years), ''), '0') AS INT) AS experience_years,
+. . . . . . . . >     -- Fix 3: normalise education_level casing
+. . . . . . . . >     INITCAP(LOWER(TRIM(education_level)))                          AS education_level,
+. . . . . . . . >     CAST(skills_count AS INT)                                      AS skills_count,
+. . . . . . . . >     industry,
+. . . . . . . . >     company_size,
+. . . . . . . . >     -- Fix 5: replace 'Remote' location → 'Unknown'
+. . . . . . . . >     CASE
+. . . . . . . . >         WHEN LOWER(TRIM(location)) = 'remote' THEN 'Unknown'
+. . . . . . . . >         ELSE TRIM(location)
+. . . . . . . . >     END                                                            AS location,
+. . . . . . . . >     -- Fix 5: ensure remote_work is 'Yes' when location was 'Remote'
+. . . . . . . . >     CASE
+. . . . . . . . >         WHEN LOWER(TRIM(location)) = 'remote' THEN 'Yes'
+. . . . . . . . >         ELSE TRIM(remote_work)
+. . . . . . . . >     END                                                            AS remote_work,
+. . . . . . . . >     CAST(call_log AS INT)                                          AS call_log,
+. . . . . . . . >     -- Fix 4: null out implausibly low salaries
+. . . . . . . . >     CASE
+. . . . . . . . >         WHEN CAST(salary AS BIGINT) < 1000 THEN NULL
+. . . . . . . . >         ELSE CAST(salary AS BIGINT)
+. . . . . . . . >     END                                                            AS salary,
+. . . . . . . . >     TRIM(date_of_marriage)                                         AS date_of_marriage,
+. . . . . . . . >     -- Fix 2: row number for deduplication by job_id
+. . . . . . . . >     ROW_NUMBER() OVER (PARTITION BY job_id ORDER BY job_id)        AS rn
+. . . . . . . . > FROM emp_raw;
+26/07/13 12:46:23 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN calcite.RelOptHiveTable: No Stats for default@emp_raw, Columns: skills_count, job_id, experience_years, date_of_marriage, call_log, education_level, industry, location, salary, job_title, company_size, remote_work
+No Stats for default@emp_raw, Columns: skills_count, job_id, experience_years, date_of_marriage, call_log, education_level, industry, location, salary, job_title, company_size, remote_work
+26/07/13 12:46:24 [HiveServer2-Background-Pool: Thread-178]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124622_75ac6cf8-95d7-4b5a-b442-7e4570c6e1d8
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:24 [HiveServer2-Background-Pool: Thread-178]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:24 [HiveServer2-Background-Pool: Thread-178]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:24 [HiveServer2-Background-Pool: Thread-178]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:24 [pool-34-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+26/07/13 12:46:25 [pool-34-thread-1]: WARN objectinspector.StandardStructObjectInspector: Trying to access 3 fields inside a list of 2 elements: [100, 402.0]
+26/07/13 12:46:25 [pool-34-thread-1]: WARN objectinspector.StandardStructObjectInspector: ignoring similar errors.
+2026-07-13 12:46:25,745 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.87 sec
+MapReduce Total cumulative CPU time: 870 msec
+Ended Job = job_local2107387187_0006
+Moving data to directory hdfs://localhost:9000/user/hive/warehouse/emp_clean
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:25 [HiveServer2-Background-Pool: Thread-178]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:25 [HiveServer2-Background-Pool: Thread-178]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:25 [HiveServer2-Background-Pool: Thread-178]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:26 [pool-38-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:27,065 Stage-3 map = 100%,  reduce = 100%, Cumulative CPU 0.61 sec
+MapReduce Total cumulative CPU time: 610 msec
+Ended Job = job_local1850910349_0007
+26/07/13 12:46:27 [HiveServer2-Background-Pool: Thread-178]: WARN metadata.Hive: Cannot get a table snapshot for emp_clean
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.87 sec   HDFS Read: 128900 HDFS Write: 4888 HDFS EC Read: 0 SUCCESS
+Stage-Stage-3:  Cumulative CPU: 0.61 sec   HDFS Read: 128900 HDFS Write: 12110 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 480 msec
+100 rows affected (4.806 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- Keep only first occurrence per job_id (Fix 2)
+0: jdbc:hive2://> CREATE TABLE emp_no_dup
+. . . . . . . . > STORED AS ORC
+. . . . . . . . > TBLPROPERTIES ("orc.compress"="SNAPPY") AS
+. . . . . . . . > SELECT
+. . . . . . . . >     job_id, job_title, experience_years, education_level,
+. . . . . . . . >     skills_count, industry, company_size, location, remote_work,
+. . . . . . . . >     call_log, salary, date_of_marriage
+. . . . . . . . > FROM emp_clean
+. . . . . . . . > WHERE rn = 1;
+26/07/13 12:46:28 [HiveServer2-Background-Pool: Thread-216]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124627_b78567ad-ee4e-41f9-90fa-1977c897b709
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:28 [HiveServer2-Background-Pool: Thread-216]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:28 [HiveServer2-Background-Pool: Thread-216]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:28 [HiveServer2-Background-Pool: Thread-216]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+26/07/13 12:46:29 [HiveServer2-Background-Pool: Thread-216]: WARN mapreduce.Counters: Group org.apache.hadoop.mapred.Task$Counter is deprecated. Use org.apache.hadoop.mapreduce.TaskCounter instead
+2026-07-13 12:46:29,754 Stage-1 map = 0%,  reduce = 0%
+26/07/13 12:46:29 [pool-43-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:29 [Readahead Thread #2]: WARN io.ReadaheadPool: Failed readahead on ifile
+org.apache.hadoop.io.nativeio.NativeIOException: Bad file descriptor
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX.posix_fadvise(Native Method) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX.posixFadviseIfPossible(NativeIO.java:426) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX$CacheManipulator.posixFadviseIfPossible(NativeIO.java:296) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.ReadaheadPool$ReadaheadRequestImpl.run(ReadaheadPool.java:220) ~[hadoop-common-3.4.1.jar:?]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) ~[?:?]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) ~[?:?]
+	at java.lang.Thread.run(Thread.java:829) ~[?:?]
+2026-07-13 12:46:30,763 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.6 sec
+MapReduce Total cumulative CPU time: 600 msec
+Ended Job = job_local1405954767_0008
+Stage-4 is selected by condition resolver.
+Stage-3 is filtered out by condition resolver.
+Stage-5 is filtered out by condition resolver.
+Moving data to directory hdfs://localhost:9000/user/hive/warehouse/.hive-staging_hive_2026-07-13_12-46-27_981_6322986028895703248-1/-ext-10002
+Moving data to directory hdfs://localhost:9000/user/hive/warehouse/emp_no_dup
+26/07/13 12:46:31 [HiveServer2-Background-Pool: Thread-216]: WARN metadata.Hive: Cannot get a table snapshot for emp_no_dup
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.6 sec   HDFS Read: 149662 HDFS Write: 26343 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 600 msec
+97 rows affected (3.244 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- Cleaned row count (after deduplication) ---' AS info;
+26/07/13 12:46:31 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++--------------------------------------------------+
+|                       info                       |
++--------------------------------------------------+
+| --- Cleaned row count (after deduplication) ---  |
++--------------------------------------------------+
+1 row selected (0.106 seconds)
+0: jdbc:hive2://> SELECT COUNT(*) AS total_cleaned_rows FROM emp_no_dup;
+26/07/13 12:46:31 [HiveServer2-Background-Pool: Thread-245]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124631_ea2de732-2284-4cb3-9505-efa7bfa7e018
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:31 [HiveServer2-Background-Pool: Thread-245]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:31 [HiveServer2-Background-Pool: Thread-245]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:31 [HiveServer2-Background-Pool: Thread-245]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:31 [pool-48-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:46:32,893 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.38 sec
+MapReduce Total cumulative CPU time: 380 msec
+Ended Job = job_local769858143_0009
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.38 sec   HDFS Read: 165206 HDFS Write: 29828 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 380 msec
++---------------------+
+| total_cleaned_rows  |
++---------------------+
+| 97                  |
++---------------------+
+1 row selected (1.477 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- Preview cleaned data (10 rows) ---' AS info;
+26/07/13 12:46:33 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++-----------------------------------------+
+|                  info                   |
++-----------------------------------------+
+| --- Preview cleaned data (10 rows) ---  |
++-----------------------------------------+
+1 row selected (0.111 seconds)
+0: jdbc:hive2://> SELECT * FROM emp_no_dup LIMIT 10;
+26/07/13 12:46:33 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Table default@emp_no_dup is external table, falling back to filesystem scan.
++--------------------+-----------------------+------------------------------+-----------------------------+--------------------------+----------------------+--------------------------+----------------------+-------------------------+----------------------+--------------------+------------------------------+
+| emp_no_dup.job_id  | emp_no_dup.job_title  | emp_no_dup.experience_years  | emp_no_dup.education_level  | emp_no_dup.skills_count  | emp_no_dup.industry  | emp_no_dup.company_size  | emp_no_dup.location  | emp_no_dup.remote_work  | emp_no_dup.call_log  | emp_no_dup.salary  | emp_no_dup.date_of_marriage  |
++--------------------+-----------------------+------------------------------+-----------------------------+--------------------------+----------------------+--------------------------+----------------------+-------------------------+----------------------+--------------------+------------------------------+
+| 1005               | AI Engineer           | 10                           | Bachelor                    | 2                        | Healthcare           | Medium                   | India                | Hybrid                  | 2                    | 109413             | 1/1/2020                     |
+| 1006               | Data Analyst          | 5                            | Bachelor                    | 17                       | Telecom              | Small                    | Australia            | No                      | 4                    | NULL               | 10/31/2020                   |
+| 1007               | Frontend Developer    | 18                           | Phd                         | 4                        | Media                | Medium                   | Singapore            | No                      | 5                    | 148123             | 12/12/2020                   |
+| 1009               | Product Manager       | 15                           | Bachelor                    | 7                        | Manufacturing        | Large                    | Sweden               | Yes                     | 6                    | 165069             | 18/1/2020                    |
+| 1010               | AI Engineer           | 0                            | High School                 | 4                        | Education            | Enterprise               | USA                  | No                      | 3                    | NULL               | 2/28/2020                    |
+| 1013               | AI Engineer           | 5                            | Diploma                     | 14                       | Telecom              | Enterprise               | Singapore            | Yes                     | 0                    | NULL               | 12/12/2020                   |
+| 1014               | Frontend Developer    | 18                           | Phd                         | 2                        | Retail               | Enterprise               | India                | Hybrid                  | 15                   | 128377             | 29/1/2020                    |
+| 1015               | Frontend Developer    | 1                            | High School                 | 10                       | Healthcare           | Large                    | Netherlands          | Yes                     | 7                    | 105755             | 18/1/2020                    |
+| 1016               | Business Analyst      | 19                           | Master                      | 7                        | Finance              | Large                    | Netherlands          | Yes                     | 5                    | 157417             | 2/28/2020                    |
+| 1017               | Product Manager       | 8                            | High School                 | 3                        | Healthcare           | Medium                   | Canada               | Yes                     | 3                    | 154190             | 1/1/2020                     |
++--------------------+-----------------------+------------------------------+-----------------------------+--------------------------+----------------------+--------------------------+----------------------+-------------------------+----------------------+--------------------+------------------------------+
+10 rows selected (0.279 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- Verify education_level after normalisation ---' AS info;
+26/07/13 12:46:33 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                        info                        |
++----------------------------------------------------+
+| --- Verify education_level after normalisation --- |
++----------------------------------------------------+
+1 row selected (0.158 seconds)
+0: jdbc:hive2://> SELECT DISTINCT education_level FROM emp_no_dup ORDER BY education_level;
+26/07/13 12:46:34 [HiveServer2-Background-Pool: Thread-270]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124633_871f30c4-57ad-4503-9962-a7423a498df4
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:34 [HiveServer2-Background-Pool: Thread-270]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:34 [HiveServer2-Background-Pool: Thread-270]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:34 [HiveServer2-Background-Pool: Thread-270]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:34 [pool-53-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:46:35,657 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.32 sec
+MapReduce Total cumulative CPU time: 320 msec
+Ended Job = job_local1046669271_0010
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:35 [HiveServer2-Background-Pool: Thread-270]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:35 [HiveServer2-Background-Pool: Thread-270]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:35 [HiveServer2-Background-Pool: Thread-270]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:36 [pool-57-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:37,114 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.66 sec
+MapReduce Total cumulative CPU time: 660 msec
+Ended Job = job_local161222446_0011
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.32 sec   HDFS Read: 194130 HDFS Write: 29930 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.66 sec   HDFS Read: 194130 HDFS Write: 30145 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 980 msec
++------------------+
+| education_level  |
++------------------+
+| Bachelor         |
+| Diploma          |
+| Education_level  |
+| High School      |
+| Master           |
+| Phd              |
++------------------+
+6 rows selected (3.329 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- Verify salary fix (no values < 1000 remain) ---' AS info;
+26/07/13 12:46:37 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                        info                        |
++----------------------------------------------------+
+| --- Verify salary fix (no values < 1000 remain) --- |
++----------------------------------------------------+
+1 row selected (0.132 seconds)
+0: jdbc:hive2://> SELECT COUNT(*) AS low_salary_count FROM emp_no_dup WHERE salary < 1000;
+26/07/13 12:46:37 [HiveServer2-Background-Pool: Thread-303]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124637_b06ba8b2-56b9-4964-be9e-8b73be1f4faa
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:37 [HiveServer2-Background-Pool: Thread-303]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:37 [HiveServer2-Background-Pool: Thread-303]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:37 [HiveServer2-Background-Pool: Thread-303]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:38 [pool-61-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:46:39,612 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.37 sec
+MapReduce Total cumulative CPU time: 370 msec
+Ended Job = job_local383108856_0012
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.37 sec   HDFS Read: 203274 HDFS Write: 30461 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 370 msec
++-------------------+
+| low_salary_count  |
++-------------------+
+| 0                 |
++-------------------+
+1 row selected (2.266 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- Verify location fix (no "Remote" in location column) ---' AS info;
+26/07/13 12:46:40 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                        info                        |
++----------------------------------------------------+
+| --- Verify location fix (no "Remote" in location column) --- |
++----------------------------------------------------+
+1 row selected (0.764 seconds)
+0: jdbc:hive2://> SELECT COUNT(*) AS remote_in_location
+. . . . . . . . > FROM emp_no_dup
+. . . . . . . . > WHERE LOWER(location) = 'remote';
+26/07/13 12:46:41 [HiveServer2-Background-Pool: Thread-322]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124641_04005941-636d-4121-8646-26138095d1ad
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:42 [HiveServer2-Background-Pool: Thread-322]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:42 [HiveServer2-Background-Pool: Thread-322]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:42 [HiveServer2-Background-Pool: Thread-322]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:46:43 [pool-65-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:44,202 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.8 sec
+MapReduce Total cumulative CPU time: 800 msec
+Ended Job = job_local1219665652_0013
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.8 sec   HDFS Read: 212388 HDFS Write: 30663 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 800 msec
++---------------------+
+| remote_in_location  |
++---------------------+
+| 0                   |
++---------------------+
+1 row selected (3.21 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- SECTION 3 – SPLIT JOB TITLE
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> SELECT '===== SECTION 3: SPLIT JOB TITLE =====' AS section;
+26/07/13 12:46:44 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++-----------------------------------------+
+|                 section                 |
++-----------------------------------------+
+| ===== SECTION 3: SPLIT JOB TITLE =====  |
++-----------------------------------------+
+1 row selected (0.108 seconds)
+0: jdbc:hive2://> -- job_title examples: "AI Engineer", "Machine Learning Engineer",
+0: jdbc:hive2://> --   "Frontend Developer", "Data Scientist", etc.
+0: jdbc:hive2://> -- We split on the FIRST space:
+0: jdbc:hive2://> --   first_title_word  → first token  (e.g. "AI", "Machine", "Frontend")
+0: jdbc:hive2://> --   remaining_title   → everything after the first space (the "others")
+0: jdbc:hive2://> 
+0: jdbc:hive2://> CREATE TABLE emp_split_title
+. . . . . . . . > STORED AS ORC
+. . . . . . . . > TBLPROPERTIES ("orc.compress"="SNAPPY") AS
+. . . . . . . . > SELECT
+. . . . . . . . >     job_id,
+. . . . . . . . >     job_title,
+. . . . . . . . >     -- First word (up to first space)
+. . . . . . . . >     SPLIT(TRIM(job_title), ' ')[0]                                 AS first_title_word,
+. . . . . . . . >     -- Everything after the first space (index 1 onward joined back)
+. . . . . . . . >     REGEXP_REPLACE(TRIM(job_title),
+. . . . . . . . >                    CONCAT('^', SPLIT(TRIM(job_title), ' ')[0], ' ?'), '')
+. . . . . . . . >                                                                    AS remaining_title,
+. . . . . . . . >     experience_years,
+. . . . . . . . >     education_level,
+. . . . . . . . >     skills_count,
+. . . . . . . . >     industry,
+. . . . . . . . >     company_size,
+. . . . . . . . >     location,
+. . . . . . . . >     remote_work,
+. . . . . . . . >     call_log,
+. . . . . . . . >     salary,
+. . . . . . . . >     date_of_marriage
+. . . . . . . . > FROM emp_no_dup;
+26/07/13 12:46:45 [HiveServer2-Background-Pool: Thread-341]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124645_ee68739d-f0ee-49de-aa89-8f71b5039b8a
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:45 [HiveServer2-Background-Pool: Thread-341]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:45 [HiveServer2-Background-Pool: Thread-341]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:45 [HiveServer2-Background-Pool: Thread-341]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:46:46,993 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 0.47 sec
+26/07/13 12:46:46 [pool-69-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:47,997 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.62 sec
+MapReduce Total cumulative CPU time: 620 msec
+Ended Job = job_local1410056598_0014
+Stage-4 is selected by condition resolver.
+Stage-3 is filtered out by condition resolver.
+Stage-5 is filtered out by condition resolver.
+Moving data to directory hdfs://localhost:9000/user/hive/warehouse/.hive-staging_hive_2026-07-13_12-46-45_198_1601542796533638633-1/-ext-10002
+Moving data to directory hdfs://localhost:9000/user/hive/warehouse/emp_split_title
+26/07/13 12:46:48 [HiveServer2-Background-Pool: Thread-341]: WARN metadata.Hive: Cannot get a table snapshot for emp_split_title
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.62 sec   HDFS Read: 225108 HDFS Write: 42978 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 620 msec
+97 rows affected (3.37 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT '--- Split job title preview ---' AS info;
+26/07/13 12:46:48 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------+
+|               info               |
++----------------------------------+
+| --- Split job title preview ---  |
++----------------------------------+
+1 row selected (0.088 seconds)
+0: jdbc:hive2://> SELECT job_id, job_title, first_title_word, remaining_title
+. . . . . . . . > FROM emp_split_title
+. . . . . . . . > LIMIT 20;
+26/07/13 12:46:48 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Table default@emp_split_title is external table, falling back to filesystem scan.
++---------+----------------------------+-------------------+--------------------+
+| job_id  |         job_title          | first_title_word  |  remaining_title   |
++---------+----------------------------+-------------------+--------------------+
+| 1005    | AI Engineer                | AI                | Engineer           |
+| 1006    | Data Analyst               | Data              | Analyst            |
+| 1007    | Frontend Developer         | Frontend          | Developer          |
+| 1009    | Product Manager            | Product           | Manager            |
+| 1010    | AI Engineer                | AI                | Engineer           |
+| 1013    | AI Engineer                | AI                | Engineer           |
+| 1014    | Frontend Developer         | Frontend          | Developer          |
+| 1015    | Frontend Developer         | Frontend          | Developer          |
+| 1016    | Business Analyst           | Business          | Analyst            |
+| 1017    | Product Manager            | Product           | Manager            |
+| 1018    | Data Analyst               | Data              | Analyst            |
+| 1019    | Business Analyst           | Business          | Analyst            |
+| 1020    | Business Analyst           | Business          | Analyst            |
+| 1021    | Machine Learning Engineer  | Machine           | Learning Engineer  |
+| 1022    | DevOps Engineer            | DevOps            | Engineer           |
+| 1023    | Product Manager            | Product           | Manager            |
+| 1024    | Software Engineer          | Software          | Engineer           |
+| 1025    | Business Analyst           | Business          | Analyst            |
+| 1026    | Cybersecurity Analyst      | Cybersecurity     | Analyst            |
+| 1027    | DevOps Engineer            | DevOps            | Engineer           |
++---------+----------------------------+-------------------+--------------------+
+20 rows selected (0.191 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- SECTION 4 – COUNT PhDs WITH < 10 YEARS EXPERIENCE BY COUNTRY
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> SELECT '===== SECTION 4: PhDs with < 10 Years Experience by Country =====' AS section;
+26/07/13 12:46:49 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                      section                       |
++----------------------------------------------------+
+| ===== SECTION 4: PhDs with < 10 Years Experience by Country ===== |
++----------------------------------------------------+
+1 row selected (0.086 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT
+. . . . . . . . >     location                    AS country,
+. . . . . . . . >     COUNT(*)                    AS phd_under_10yrs_count
+. . . . . . . . > FROM emp_no_dup
+. . . . . . . . > WHERE LOWER(TRIM(education_level)) = 'phd'
+. . . . . . . . >   AND experience_years < 10
+. . . . . . . . > GROUP BY location
+. . . . . . . . > ORDER BY phd_under_10yrs_count DESC;
+26/07/13 12:46:50 [HiveServer2-Background-Pool: Thread-376]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124649_5288e7ee-c2e9-4780-9fc5-a3d24dc17d9f
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:50 [HiveServer2-Background-Pool: Thread-376]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:50 [HiveServer2-Background-Pool: Thread-376]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:50 [HiveServer2-Background-Pool: Thread-376]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:46:51 [pool-74-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:51,932 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.14 sec
+MapReduce Total cumulative CPU time: 140 msec
+Ended Job = job_local923885289_0015
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:51 [HiveServer2-Background-Pool: Thread-376]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:51 [HiveServer2-Background-Pool: Thread-376]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:51 [HiveServer2-Background-Pool: Thread-376]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:52 [pool-78-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:46:53,352 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.41 sec
+MapReduce Total cumulative CPU time: 410 msec
+Ended Job = job_local622614116_0016
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.14 sec   HDFS Read: 262292 HDFS Write: 46614 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.41 sec   HDFS Read: 262292 HDFS Write: 46834 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 550 msec
++--------------+------------------------+
+|   country    | phd_under_10yrs_count  |
++--------------+------------------------+
+| UK           | 3                      |
+| Germany      | 2                      |
+| Singapore    | 1                      |
+| Netherlands  | 1                      |
+| India        | 1                      |
+| Australia    | 1                      |
++--------------+------------------------+
+6 rows selected (3.888 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- Total count
+0: jdbc:hive2://> SELECT
+. . . . . . . . >     COUNT(*) AS total_phd_less_than_10yrs
+. . . . . . . . > FROM emp_no_dup
+. . . . . . . . > WHERE LOWER(TRIM(education_level)) = 'phd'
+. . . . . . . . >   AND experience_years < 10;
+26/07/13 12:46:53 [HiveServer2-Background-Pool: Thread-406]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124653_30ea4055-cd53-4e3f-9484-7caf5e083e18
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:53 [HiveServer2-Background-Pool: Thread-406]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:53 [HiveServer2-Background-Pool: Thread-406]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:53 [HiveServer2-Background-Pool: Thread-406]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:54 [pool-82-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:54 [Readahead Thread #0]: WARN io.ReadaheadPool: Failed readahead on ifile
+org.apache.hadoop.io.nativeio.NativeIOException: Bad file descriptor
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX.posix_fadvise(Native Method) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX.posixFadviseIfPossible(NativeIO.java:426) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX$CacheManipulator.posixFadviseIfPossible(NativeIO.java:296) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.ReadaheadPool$ReadaheadRequestImpl.run(ReadaheadPool.java:220) ~[hadoop-common-3.4.1.jar:?]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) ~[?:?]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) ~[?:?]
+	at java.lang.Thread.run(Thread.java:829) ~[?:?]
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:46:55,291 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.09 sec
+MapReduce Total cumulative CPU time: 90 msec
+Ended Job = job_local601728834_0017
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.09 sec   HDFS Read: 271952 HDFS Write: 47155 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 90 msec
++----------------------------+
+| total_phd_less_than_10yrs  |
++----------------------------+
+| 9                          |
++----------------------------+
+1 row selected (1.798 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- SECTION 5 – SKILLS COUNT IN ASCENDING ORDER
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> SELECT '===== SECTION 5: Skills Count in Ascending Order =====' AS section;
+26/07/13 12:46:55 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                      section                       |
++----------------------------------------------------+
+| ===== SECTION 5: Skills Count in Ascending Order ===== |
++----------------------------------------------------+
+1 row selected (0.07 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT
+. . . . . . . . >     job_id,
+. . . . . . . . >     job_title,
+. . . . . . . . >     education_level,
+. . . . . . . . >     skills_count
+. . . . . . . . > FROM emp_no_dup
+. . . . . . . . > ORDER BY skills_count ASC;
+26/07/13 12:46:55 [HiveServer2-Background-Pool: Thread-425]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124655_a6c512c9-1fdd-47aa-9be2-4287b4173b96
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:55 [HiveServer2-Background-Pool: Thread-425]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:55 [HiveServer2-Background-Pool: Thread-425]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:55 [HiveServer2-Background-Pool: Thread-425]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:56 [pool-86-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:46:57,116 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.45 sec
+MapReduce Total cumulative CPU time: 450 msec
+Ended Job = job_local1394282566_0018
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.45 sec   HDFS Read: 282506 HDFS Write: 51704 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 450 msec
++---------+----------------------------+------------------+---------------+
+| job_id  |         job_title          | education_level  | skills_count  |
++---------+----------------------------+------------------+---------------+
+| 1022    | DevOps Engineer            | Bachelor         | 1             |
+| 1088    | Data Analyst               | Phd              | 1             |
+| 1069    | Cybersecurity Analyst      | Master           | 1             |
+| 1073    | Data Analyst               | High School      | 1             |
+| 1005    | AI Engineer                | Bachelor         | 2             |
+| 1028    | Software Engineer          | High School      | 2             |
+| 1090    | AI Engineer                | High School      | 2             |
+| 1099    | Cloud Engineer             | High School      | 2             |
+| 1014    | Frontend Developer         | Phd              | 2             |
+| 1076    | Data Analyst               | Bachelor         | 2             |
+| 1077    | Software Engineer          | Master           | 2             |
+| 1062    | Backend Developer          | Bachelor         | 3             |
+| 1063    | Product Manager            | Master           | 3             |
+| 1017    | Product Manager            | High School      | 3             |
+| 1018    | Data Analyst               | Bachelor         | 3             |
+| 1093    | Business Analyst           | High School      | 3             |
+| 1036    | Cloud Engineer             | Phd              | 3             |
+| 1037    | Data Scientist             | Master           | 3             |
+| 1083    | Software Engineer          | Diploma          | 3             |
+| 1052    | Product Manager            | Diploma          | 3             |
+| 1102    | Cybersecurity Analyst      | Diploma          | 3             |
+| 1075    | Business Analyst           | High School      | 3             |
+| 1082    | DevOps Engineer            | Bachelor         | 4             |
+| 1010    | AI Engineer                | High School      | 4             |
+| 1078    | DevOps Engineer            | Phd              | 4             |
+| 1007    | Frontend Developer         | Phd              | 4             |
+| 1040    | Backend Developer          | Master           | 4             |
+| 1046    | Data Analyst               | Phd              | 4             |
+| 1047    | Cloud Engineer             | Phd              | 4             |
+| 1081    | Data Analyst               | High School      | 5             |
+| 1068    | AI Engineer                | Diploma          | 5             |
+| 1019    | Business Analyst           | Phd              | 5             |
+| 1101    | Cybersecurity Analyst      | High School      | 5             |
+| 1056    | Data Analyst               | Master           | 6             |
+| 1094    | Product Manager            | Master           | 6             |
+| 1079    | DevOps Engineer            | High School      | 6             |
+| 1071    | Machine Learning Engineer  | High School      | 6             |
+| 1065    | Data Analyst               | Master           | 6             |
+| 1059    | Software Engineer          | Master           | 6             |
+| 1061    | Cloud Engineer             | Master           | 7             |
+| 1009    | Product Manager            | Bachelor         | 7             |
+| 1016    | Business Analyst           | Master           | 7             |
+| 1026    | Cybersecurity Analyst      | Diploma          | 7             |
+| 1095    | Software Engineer          | Phd              | 8             |
+| 1035    | Cybersecurity Analyst      | Phd              | 8             |
+| 1027    | DevOps Engineer            | Bachelor         | 8             |
+| 1030    | Product Manager            | Master           | 8             |
+| 1057    | Cloud Engineer             | Diploma          | 8             |
+| 1098    | Backend Developer          | Bachelor         | 8             |
+| 1092    | Cloud Engineer             | Master           | 9             |
+| 1058    | Cybersecurity Analyst      | High School      | 9             |
+| 1020    | Business Analyst           | Bachelor         | 9             |
+| 1091    | Cybersecurity Analyst      | Bachelor         | 9             |
+| 1051    | AI Engineer                | Master           | 10            |
+| 1015    | Frontend Developer         | High School      | 10            |
+| 1024    | Software Engineer          | High School      | 10            |
+| 1045    | AI Engineer                | Diploma          | 10            |
+| 1042    | Cybersecurity Analyst      | Bachelor         | 10            |
+| 1060    | Backend Developer          | Phd              | 11            |
+| 1055    | Software Engineer          | Diploma          | 11            |
+| 1066    | Cybersecurity Analyst      | Diploma          | 12            |
+| 1044    | Cybersecurity Analyst      | Master           | 12            |
+| 1087    | Backend Developer          | Phd              | 12            |
+| 1023    | Product Manager            | Master           | 12            |
+| 1096    | Product Manager            | Master           | 13            |
+| 1041    | Cybersecurity Analyst      | Phd              | 13            |
+| 1054    | AI Engineer                | High School      | 13            |
+| 1089    | Business Analyst           | Diploma          | 14            |
+| 1053    | Cloud Engineer             | Diploma          | 14            |
+| 1049    | Product Manager            | High School      | 14            |
+| 1031    | Data Scientist             | Bachelor         | 14            |
+| 1013    | AI Engineer                | Diploma          | 14            |
+| 1048    | Machine Learning Engineer  | High School      | 15            |
+| 1067    | Cybersecurity Analyst      | Master           | 15            |
+| 1029    | Cybersecurity Analyst      | High School      | 15            |
+| 1043    | Machine Learning Engineer  | Phd              | 15            |
+| 1025    | Business Analyst           | Bachelor         | 15            |
+| 1033    | Backend Developer          | Diploma          | 15            |
+| 1084    | Backend Developer          | Master           | 15            |
+| 1021    | Machine Learning Engineer  | Phd              | 16            |
+| 1064    | Software Engineer          | Phd              | 16            |
+| 1074    | Software Engineer          | Master           | 16            |
+| 1050    | Machine Learning Engineer  | Bachelor         | 17            |
+| 1038    | Frontend Developer         | Diploma          | 17            |
+| 1006    | Data Analyst               | Bachelor         | 17            |
+| 1103    | Cloud Engineer             | Master           | 17            |
+| 1086    | Software Engineer          | High School      | 18            |
+| 1072    | Data Scientist             | Master           | 18            |
+| 1070    | Business Analyst           | Diploma          | 18            |
+| 1100    | Cybersecurity Analyst      | Master           | 18            |
+| 1039    | Frontend Developer         | Diploma          | 18            |
+| 1080    | Backend Developer          | Diploma          | 18            |
+| 1034    | DevOps Engineer            | Diploma          | 19            |
+| 1032    | Cybersecurity Analyst      | Phd              | 19            |
+| 1085    | Cybersecurity Analyst      | Diploma          | 19            |
+| 1097    | Business Analyst           | Bachelor         | 25            |
+| job_id  | job_title                  | Education_level  | NULL          |
++---------+----------------------------+------------------+---------------+
+97 rows selected (1.559 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- Summary: frequency distribution of skills_count values
+0: jdbc:hive2://> SELECT
+. . . . . . . . >     skills_count,
+. . . . . . . . >     COUNT(*) AS frequency
+. . . . . . . . > FROM emp_no_dup
+. . . . . . . . > GROUP BY skills_count
+. . . . . . . . > ORDER BY skills_count ASC;
+26/07/13 12:46:57 [HiveServer2-Background-Pool: Thread-442]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124657_c0f10178-7bf8-4d10-8cd9-143377a76663
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:57 [HiveServer2-Background-Pool: Thread-442]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:57 [HiveServer2-Background-Pool: Thread-442]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:57 [HiveServer2-Background-Pool: Thread-442]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:57 [pool-90-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:57 [Readahead Thread #0]: WARN io.ReadaheadPool: Failed readahead on ifile
+org.apache.hadoop.io.nativeio.NativeIOException: Bad file descriptor
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX.posix_fadvise(Native Method) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX.posixFadviseIfPossible(NativeIO.java:426) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.nativeio.NativeIO$POSIX$CacheManipulator.posixFadviseIfPossible(NativeIO.java:296) ~[hadoop-common-3.4.1.jar:?]
+	at org.apache.hadoop.io.ReadaheadPool$ReadaheadRequestImpl.run(ReadaheadPool.java:220) ~[hadoop-common-3.4.1.jar:?]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128) ~[?:?]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) ~[?:?]
+	at java.lang.Thread.run(Thread.java:829) ~[?:?]
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+2026-07-13 12:46:58,886 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.1 sec
+MapReduce Total cumulative CPU time: 100 msec
+Ended Job = job_local830620367_0019
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:46:58 [HiveServer2-Background-Pool: Thread-442]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:58 [HiveServer2-Background-Pool: Thread-442]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:46:58 [HiveServer2-Background-Pool: Thread-442]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:46:59 [pool-94-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:00,357 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.52 sec
+MapReduce Total cumulative CPU time: 520 msec
+Ended Job = job_local200060487_0020
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.1 sec   HDFS Read: 300242 HDFS Write: 56152 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.52 sec   HDFS Read: 300242 HDFS Write: 56588 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 620 msec
++---------------+------------+
+| skills_count  | frequency  |
++---------------+------------+
+| 1             | 4          |
+| 2             | 7          |
+| 3             | 11         |
+| 4             | 7          |
+| 5             | 4          |
+| 6             | 6          |
+| 7             | 4          |
+| 8             | 6          |
+| 9             | 4          |
+| 10            | 5          |
+| 11            | 2          |
+| 12            | 4          |
+| 13            | 3          |
+| 14            | 5          |
+| 15            | 7          |
+| 16            | 3          |
+| 17            | 4          |
+| 18            | 6          |
+| 19            | 3          |
+| 25            | 1          |
+| NULL          | 1          |
++---------------+------------+
+21 rows selected (3.059 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- SECTION 6 – GROWTH RATE OF CALL LOG (PhD / Bachelor / High School)
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- Growth Rate = ((Current - Previous) / Previous) * 100
+0: jdbc:hive2://> -- We treat each job_id row as a sequential data point ordered by job_id.
+0: jdbc:hive2://> -- For each education group, we compute row-to-row growth in call_log.
+0: jdbc:hive2://> SELECT '===== SECTION 6: Growth Rate of Call Log =====' AS section;
+26/07/13 12:47:00 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++-------------------------------------------------+
+|                     section                     |
++-------------------------------------------------+
+| ===== SECTION 6: Growth Rate of Call Log =====  |
++-------------------------------------------------+
+1 row selected (0.134 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- Aggregate call_log by education group, then compute growth rate
+0: jdbc:hive2://> -- between consecutive rows (ordered by job_id) within each group.
+0: jdbc:hive2://> 
+0: jdbc:hive2://> SELECT
+. . . . . . . . >     education_level,
+. . . . . . . . >     job_id,
+. . . . . . . . >     call_log                                                   AS current_call_log,
+. . . . . . . . >     LAG(call_log) OVER (
+. . . . . . . . >         PARTITION BY education_level
+. . . . . . . . >         ORDER BY job_id
+. . . . . . . . >     )                                                          AS prev_call_log,
+. . . . . . . . >     ROUND(
+. . . . . . . . >         CASE
+. . . . . . . . >             WHEN LAG(call_log) OVER (
+. . . . . . . . >                      PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >                  ) IS NULL
+. . . . . . . . >               OR LAG(call_log) OVER (
+. . . . . . . . >                      PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >                  ) = 0
+. . . . . . . . >             THEN NULL
+. . . . . . . . >             ELSE ((call_log - LAG(call_log) OVER (
+. . . . . . . . >                                   PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >                               ))
+. . . . . . . . >                   / CAST(LAG(call_log) OVER (
+. . . . . . . . >                               PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >                          ) AS DOUBLE)) * 100.0
+. . . . . . . . >         END
+. . . . . . . . >     , 2)                                                       AS growth_rate_pct
+. . . . . . . . > FROM emp_no_dup
+. . . . . . . . > WHERE LOWER(TRIM(education_level)) IN ('phd', 'bachelor', 'high school')
+. . . . . . . . > ORDER BY education_level, job_id;
+26/07/13 12:47:04 [HiveServer2-Background-Pool: Thread-474]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124702_8a796173-ddfc-4f89-a283-73515078d674
+Total jobs = 2
+Launching Job 1 out of 2
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:47:04 [HiveServer2-Background-Pool: Thread-474]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:04 [HiveServer2-Background-Pool: Thread-474]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:04 [HiveServer2-Background-Pool: Thread-474]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:47:10 [HiveServer2-Background-Pool: Thread-474]: WARN mapreduce.Counters: Group org.apache.hadoop.mapred.Task$Counter is deprecated. Use org.apache.hadoop.mapreduce.TaskCounter instead
+2026-07-13 12:47:10,623 Stage-1 map = 0%,  reduce = 0%
+26/07/13 12:47:10 [pool-98-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:11,656 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 6.29 sec
+MapReduce Total cumulative CPU time: 6 seconds 290 msec
+Ended Job = job_local1903460525_0021
+Launching Job 2 out of 2
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:47:11 [HiveServer2-Background-Pool: Thread-474]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:12 [HiveServer2-Background-Pool: Thread-474]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:12 [HiveServer2-Background-Pool: Thread-474]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:47:16 [pool-102-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:17,200 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 0.61 sec
+2026-07-13 12:47:18,215 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.89 sec
+MapReduce Total cumulative CPU time: 890 msec
+Ended Job = job_local728341436_0022
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 6.29 sec   HDFS Read: 310936 HDFS Write: 57024 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.89 sec   HDFS Read: 310936 HDFS Write: 59007 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 7 seconds 180 msec
++------------------+---------+-------------------+----------------+------------------+
+| education_level  | job_id  | current_call_log  | prev_call_log  | growth_rate_pct  |
++------------------+---------+-------------------+----------------+------------------+
+| Bachelor         | 1005    | 2                 | NULL           | NULL             |
+| Bachelor         | 1006    | 4                 | 2              | 100.0            |
+| Bachelor         | 1009    | 6                 | 4              | 50.0             |
+| Bachelor         | 1018    | 4                 | 6              | -33.33           |
+| Bachelor         | 1020    | 4                 | 4              | 0.0              |
+| Bachelor         | 1022    | 2                 | 4              | -50.0            |
+| Bachelor         | 1025    | 0                 | 2              | -100.0           |
+| Bachelor         | 1027    | 1                 | 0              | NULL             |
+| Bachelor         | 1031    | 5                 | 1              | 400.0            |
+| Bachelor         | 1042    | 0                 | 5              | -100.0           |
+| Bachelor         | 1050    | 4                 | 0              | NULL             |
+| Bachelor         | 1062    | 4                 | 4              | 0.0              |
+| Bachelor         | 1076    | 0                 | 4              | -100.0           |
+| Bachelor         | 1082    | 0                 | 0              | NULL             |
+| Bachelor         | 1091    | 3                 | 0              | NULL             |
+| Bachelor         | 1097    | 2                 | 3              | -33.33           |
+| Bachelor         | 1098    | 3                 | 2              | 50.0             |
+| High School      | 1010    | 3                 | NULL           | NULL             |
+| High School      | 1015    | 7                 | 3              | 133.33           |
+| High School      | 1017    | 3                 | 7              | -57.14           |
+| High School      | 1024    | 1                 | 3              | -66.67           |
+| High School      | 1028    | 1                 | 1              | 0.0              |
+| High School      | 1029    | 1                 | 1              | 0.0              |
+| High School      | 1048    | 2                 | 1              | 100.0            |
+| High School      | 1049    | 1                 | 2              | -50.0            |
+| High School      | 1054    | 2                 | 1              | 100.0            |
+| High School      | 1058    | 2                 | 2              | 0.0              |
+| High School      | 1071    | 1                 | 2              | -50.0            |
+| High School      | 1073    | 4                 | 1              | 300.0            |
+| High School      | 1075    | 2                 | 4              | -50.0            |
+| High School      | 1079    | 5                 | 2              | 150.0            |
+| High School      | 1081    | 3                 | 5              | -40.0            |
+| High School      | 1086    | 1                 | 3              | -66.67           |
+| High School      | 1090    | 3                 | 1              | 200.0            |
+| High School      | 1093    | 1                 | 3              | -66.67           |
+| High School      | 1099    | 3                 | 1              | 200.0            |
+| High School      | 1101    | 1                 | 3              | -66.67           |
+| Phd              | 1007    | 5                 | NULL           | NULL             |
+| Phd              | 1014    | 15                | 5              | 200.0            |
+| Phd              | 1019    | 1                 | 15             | -93.33           |
+| Phd              | 1021    | 3                 | 1              | 200.0            |
+| Phd              | 1032    | 2                 | 3              | -33.33           |
+| Phd              | 1035    | 4                 | 2              | 100.0            |
+| Phd              | 1036    | 0                 | 4              | -100.0           |
+| Phd              | 1041    | 2                 | 0              | NULL             |
+| Phd              | 1043    | 5                 | 2              | 150.0            |
+| Phd              | 1046    | 5                 | 5              | 0.0              |
+| Phd              | 1047    | 4                 | 5              | -20.0            |
+| Phd              | 1060    | 3                 | 4              | -25.0            |
+| Phd              | 1064    | 4                 | 3              | 33.33            |
+| Phd              | 1078    | 1                 | 4              | -75.0            |
+| Phd              | 1087    | 1                 | 1              | 0.0              |
+| Phd              | 1088    | 0                 | 1              | -100.0           |
+| Phd              | 1095    | 3                 | 0              | NULL             |
++------------------+---------+-------------------+----------------+------------------+
+54 rows selected (15.675 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- Summary: Average growth rate per education level
+0: jdbc:hive2://> SELECT
+. . . . . . . . >     education_level,
+. . . . . . . . >     ROUND(AVG(growth_rate_pct), 2)  AS avg_growth_rate_pct
+. . . . . . . . > FROM (
+. . . . . . . . >     SELECT
+. . . . . . . . >         education_level,
+. . . . . . . . >         ROUND(
+. . . . . . . . >             CASE
+. . . . . . . . >                 WHEN LAG(call_log) OVER (
+. . . . . . . . >                          PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >                      ) IS NULL
+. . . . . . . . >                   OR LAG(call_log) OVER (
+. . . . . . . . >                          PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >                      ) = 0
+. . . . . . . . >                 THEN NULL
+. . . . . . . . >                 ELSE ((call_log - LAG(call_log) OVER (
+. . . . . . . . >                                       PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >                                   ))
+. . . . . . . . >                       / CAST(LAG(call_log) OVER (
+. . . . . . . . >                                   PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >                              ) AS DOUBLE)) * 100.0
+. . . . . . . . >             END
+. . . . . . . . >         , 2) AS growth_rate_pct
+. . . . . . . . >     FROM emp_no_dup
+. . . . . . . . >     WHERE LOWER(TRIM(education_level)) IN ('phd', 'bachelor', 'high school')
+. . . . . . . . > ) growth_sub
+. . . . . . . . > GROUP BY education_level
+. . . . . . . . > ORDER BY education_level;
+26/07/13 12:47:21 [HiveServer2-Background-Pool: Thread-504]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124721_c5dc7a64-c40a-4384-84da-48de3b80467e
+Total jobs = 3
+Launching Job 1 out of 3
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:47:21 [HiveServer2-Background-Pool: Thread-504]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:21 [HiveServer2-Background-Pool: Thread-504]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:21 [HiveServer2-Background-Pool: Thread-504]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:47:23 [pool-106-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:24,468 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 1.56 sec
+MapReduce Total cumulative CPU time: 1 seconds 560 msec
+Ended Job = job_local1869337696_0023
+Launching Job 2 out of 3
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:47:24 [HiveServer2-Background-Pool: Thread-504]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:24 [HiveServer2-Background-Pool: Thread-504]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:24 [HiveServer2-Background-Pool: Thread-504]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:47:25 [pool-110-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:25,997 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.33 sec
+MapReduce Total cumulative CPU time: 330 msec
+Ended Job = job_local877841700_0024
+Launching Job 3 out of 3
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:47:26 [HiveServer2-Background-Pool: Thread-504]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:26 [HiveServer2-Background-Pool: Thread-504]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:26 [HiveServer2-Background-Pool: Thread-504]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:47:26 [pool-114-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:27,312 Stage-3 map = 100%,  reduce = 100%, Cumulative CPU 0.13 sec
+MapReduce Total cumulative CPU time: 130 msec
+Ended Job = job_local540804809_0025
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 1.56 sec   HDFS Read: 324724 HDFS Write: 60990 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.33 sec   HDFS Read: 324724 HDFS Write: 60990 HDFS EC Read: 0 SUCCESS
+Stage-Stage-3:  Cumulative CPU: 0.13 sec   HDFS Read: 324724 HDFS Write: 61156 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 20 msec
++------------------+----------------------+
+| education_level  | avg_growth_rate_pct  |
++------------------+----------------------+
+| Bachelor         | 15.28                |
+| High School      | 35.24                |
+| Phd              | 16.91                |
++------------------+----------------------+
+3 rows selected (6.328 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- SECTION 7 – PREDICT FUTURE VALUE OF CALL LOG
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- Formula used: Linear Trend Prediction
+0: jdbc:hive2://> --   Future Value = Last Value * (1 + avg_growth_rate / 100) ^ n_periods
+0: jdbc:hive2://> -- We predict 3 steps ahead for each education group.
+0: jdbc:hive2://> -- avg_growth_rate is computed from the historical data above.
+0: jdbc:hive2://> SELECT '===== SECTION 7: Predicted Future Call Log Values =====' AS section;
+26/07/13 12:47:27 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++----------------------------------------------------+
+|                      section                       |
++----------------------------------------------------+
+| ===== SECTION 7: Predicted Future Call Log Values ===== |
++----------------------------------------------------+
+1 row selected (0.154 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> WITH growth_stats AS (
+. . . . . . . . >     -- Step A: compute row-to-row growth rates
+. . . . . . . . >     SELECT
+. . . . . . . . >         education_level,
+. . . . . . . . >         job_id,
+. . . . . . . . >         call_log,
+. . . . . . . . >         LAG(call_log) OVER (
+. . . . . . . . >             PARTITION BY education_level ORDER BY job_id
+. . . . . . . . >         ) AS prev_call_log
+. . . . . . . . >     FROM emp_no_dup
+. . . . . . . . >     WHERE LOWER(TRIM(education_level)) IN ('phd', 'bachelor', 'high school')
+. . . . . . . . > ),
+. . . . . . . . > growth_pct AS (
+. . . . . . . . >     -- Step B: growth % per row
+. . . . . . . . >     SELECT
+. . . . . . . . >         education_level,
+. . . . . . . . >         job_id,
+. . . . . . . . >         call_log,
+. . . . . . . . >         CASE
+. . . . . . . . >             WHEN prev_call_log IS NULL OR prev_call_log = 0 THEN NULL
+. . . . . . . . >             ELSE ((call_log - prev_call_log)
+. . . . . . . . >                   / CAST(prev_call_log AS DOUBLE)) * 100.0
+. . . . . . . . >         END AS growth_rate_pct
+. . . . . . . . >     FROM growth_stats
+. . . . . . . . > ),
+. . . . . . . . > summary AS (
+. . . . . . . . >     -- Step C: aggregate stats per education group
+. . . . . . . . >     SELECT
+. . . . . . . . >         education_level,
+. . . . . . . . >         COUNT(*)                          AS n_records,
+. . . . . . . . >         ROUND(AVG(call_log), 4)           AS avg_call_log,
+. . . . . . . . >         MAX(call_log)                     AS last_call_log,
+. . . . . . . . >         ROUND(AVG(growth_rate_pct), 4)    AS avg_growth_rate_pct
+. . . . . . . . >     FROM growth_pct
+. . . . . . . . >     GROUP BY education_level
+. . . . . . . . > )
+. . . . . . . . > -- Step D: project 1, 2 and 3 periods ahead using compound growth formula
+. . . . . . . . > SELECT
+. . . . . . . . >     education_level,
+. . . . . . . . >     n_records,
+. . . . . . . . >     avg_call_log,
+. . . . . . . . >     last_call_log,
+. . . . . . . . >     ROUND(avg_growth_rate_pct, 2)                                       AS avg_growth_rate_pct,
+. . . . . . . . >     ROUND(last_call_log
+. . . . . . . . >           * POWER(1 + avg_growth_rate_pct / 100.0, 1), 4)               AS predicted_period_1,
+. . . . . . . . >     ROUND(last_call_log
+. . . . . . . . >           * POWER(1 + avg_growth_rate_pct / 100.0, 2), 4)               AS predicted_period_2,
+. . . . . . . . >     ROUND(last_call_log
+. . . . . . . . >           * POWER(1 + avg_growth_rate_pct / 100.0, 3), 4)               AS predicted_period_3
+. . . . . . . . > FROM summary
+. . . . . . . . > ORDER BY education_level;
+26/07/13 12:47:29 [HiveServer2-Background-Pool: Thread-549]: WARN ql.Driver: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Query ID = ambsh_20260713124729_2d342bce-b202-42c0-99ed-601b08530dae
+Total jobs = 3
+Launching Job 1 out of 3
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:47:29 [HiveServer2-Background-Pool: Thread-549]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:29 [HiveServer2-Background-Pool: Thread-549]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:29 [HiveServer2-Background-Pool: Thread-549]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+Job running in-process (local Hadoop)
+26/07/13 12:47:30 [pool-118-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:31,728 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 0.63 sec
+MapReduce Total cumulative CPU time: 630 msec
+Ended Job = job_local1698624637_0026
+Launching Job 2 out of 3
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:47:31 [HiveServer2-Background-Pool: Thread-549]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:31 [HiveServer2-Background-Pool: Thread-549]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:31 [HiveServer2-Background-Pool: Thread-549]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:47:32 [pool-122-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:33,145 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 0.11 sec
+MapReduce Total cumulative CPU time: 110 msec
+Ended Job = job_local2030916496_0027
+Launching Job 3 out of 3
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+26/07/13 12:47:33 [HiveServer2-Background-Pool: Thread-549]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:33 [HiveServer2-Background-Pool: Thread-549]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+26/07/13 12:47:33 [HiveServer2-Background-Pool: Thread-549]: WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+Job running in-process (local Hadoop)
+26/07/13 12:47:33 [pool-126-thread-1]: WARN impl.MetricsSystemImpl: JobTracker metrics system already initialized!
+2026-07-13 12:47:34,431 Stage-3 map = 100%,  reduce = 100%, Cumulative CPU 0.31 sec
+MapReduce Total cumulative CPU time: 310 msec
+Ended Job = job_local855022489_0028
+MapReduce Jobs Launched: 
+Stage-Stage-1:  Cumulative CPU: 0.63 sec   HDFS Read: 334878 HDFS Write: 61322 HDFS EC Read: 0 SUCCESS
+Stage-Stage-2:  Cumulative CPU: 0.11 sec   HDFS Read: 334878 HDFS Write: 61322 HDFS EC Read: 0 SUCCESS
+Stage-Stage-3:  Cumulative CPU: 0.31 sec   HDFS Read: 334878 HDFS Write: 61590 HDFS EC Read: 0 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 50 msec
++------------------+------------+---------------+----------------+----------------------+---------------------+---------------------+---------------------+
+| education_level  | n_records  | avg_call_log  | last_call_log  | avg_growth_rate_pct  | predicted_period_1  | predicted_period_2  | predicted_period_3  |
++------------------+------------+---------------+----------------+----------------------+---------------------+---------------------+---------------------+
+| Bachelor         | 17         | 2.5882        | 6              | 15.28                | 6.9167              | 7.9734              | 9.1915              |
+| High School      | 20         | 2.35          | 7              | 35.24                | 9.4667              | 12.8025             | 17.3139             |
+| Phd              | 17         | 3.4118        | 15             | 16.9                 | 17.5357             | 20.5001             | 23.9656             |
++------------------+------------+---------------+----------------+----------------------+---------------------+---------------------+---------------------+
+3 rows selected (5.214 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> -- END OF SCRIPT
+0: jdbc:hive2://> -- ============================================================
+0: jdbc:hive2://> SELECT '===== ALL SECTIONS COMPLETE =====' AS done;
+26/07/13 12:47:34 [3484b638-5533-4089-9db3-d861934dc595 main]: WARN optimizer.SimpleFetchOptimizer: Cannot determine basic stats for table: _dummy_database@_dummy_table from metastore. Falling back.
++------------------------------------+
+|                done                |
++------------------------------------+
+| ===== ALL SECTIONS COMPLETE =====  |
++------------------------------------+
+1 row selected (0.076 seconds)
+0: jdbc:hive2://> 
+0: jdbc:hive2://> Closing: 0: jdbc:hive2://
+26/07/13 12:47:34 [shutdown-hook-0]: WARN util.ShutdownHookManager: Shutdown in progress, cannot cancel a deleteOnExit
+26/07/13 12:47:34 [shutdown-hook-0]: WARN util.ShutdownHookManager: Shutdown in progress, cannot cancel a deleteOnExit
